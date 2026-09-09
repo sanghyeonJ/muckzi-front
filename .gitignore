@@ -1,0 +1,31 @@
+# 1. 의존성 라이브러리 및 빌드 결과물 (용량 폭탄 방지 필수)
+node_modules
+dist
+dist-ssr
+*.local
+
+# 2. 로그 파일 (실행 에러 로그 제외)
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 3. 에디터 및 OS 개인 설정 파일 (맥북 전용 .DS_Store 포함)
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 4. 🔒 중요: 환경변수 설정 파일 (추후 API Key, 백엔드 주소 보안용)
+.env
+.env.production
+.env.development
