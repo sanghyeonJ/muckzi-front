@@ -8,7 +8,20 @@ function SignupPage() {
   const [nickname, setNickname] = useState('');
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
+    if(!userId.trim()){
+      alert("아이디를 입력해주세요.");
+      return;
+    }
+    if(!password.trim()){
+      alert("비밀번호를 입력해주세요.");
+      return;
+    }
+    if(!nickname.trim()){
+      alert("닉네임을 입력해주세요.");
+      return;
+    }
 
     try{
       const response = await axios.post(
@@ -22,7 +35,7 @@ function SignupPage() {
 
       console.log(response);
       alert("회원가입이 완료되었습니다.");
-      
+
     }catch(error){
       console.error(error);
       alert(error.response?.data?.message ||"회원가입에 실패했습니다.");
