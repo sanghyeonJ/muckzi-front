@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function SignupPage() {
 
+  const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
 
   const handleSubmit = async (e) => {
-    
+
     e.preventDefault();
     if(!userId.trim()){
       alert("아이디를 입력해주세요.");
@@ -35,7 +37,7 @@ function SignupPage() {
 
       console.log(response);
       alert("회원가입이 완료되었습니다.");
-
+      navigate("/login");
     }catch(error){
       console.error(error);
       alert(error.response?.data?.message ||"회원가입에 실패했습니다.");
@@ -49,7 +51,7 @@ function SignupPage() {
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            먹지
+            회원가입
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">

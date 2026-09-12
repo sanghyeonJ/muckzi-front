@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
 
+  const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
@@ -26,10 +28,11 @@ function LoginPage() {
         }
       );
 
-      console.log(response.data);
       const accessToken = response.data.accessToken;
       localStorage.setItem("accessToken", accessToken);
+
       alert("로그인에 성공했습니다.");
+      navigate("/");
     }catch(error){
       console.error(error);
       alert(error.response?.data?.message || "로그인에 실패했습니다.");
@@ -44,7 +47,7 @@ function LoginPage() {
         <div className="text-center mb-8">
 
           <h1 className="text-3xl font-bold text-gray-900">
-            먹지
+            로그인
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">
