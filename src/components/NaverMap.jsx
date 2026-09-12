@@ -1,9 +1,27 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import api from '../api/axios';
 
 function NaverMap() {
   
+  const [restaurants, setRestaurants] = useState([]);
+  const [map, setMap] = useState(null);
   const mapRef = useRef(null);
 
+  // 음식점 정보
+  useEffect(() => {
+    const getPlaces = async () => {
+      try{
+        const response = await api.get("/api/places");
+        setRestaurants(response.data);
+      }catch(error){
+        console.error(error);
+        alert("맛집 정보를 불러오지 못했습니다.");
+      }
+    }
+    getPlaces();
+  },[]);
+
+  // 지도생성
   useEffect(() => {
     const script = document.createElement('script');
 
@@ -15,50 +33,8 @@ function NaverMap() {
         center: new window.naver.maps.LatLng(36.3504, 127.3845),
         zoom: 14,
       });
-
-      const restaurants = [
-        {
-          name: "대전시청 맛집",
-          lat: 36.3504,
-          lng: 127.3845,
-        },
-        {
-          name: "둔산동 맛집",
-          lat: 36.3515,
-          lng: 127.3900,
-        },
-        {
-          name: "은행동 맛집",
-          lat: 36.3270,
-          lng: 127.4270,
-        },
-      ];
       
-      restaurants.forEach((restaurant) => {
-        const marker = new window.naver.maps.Marker({
-          position: new window.naver.maps.LatLng(restaurant.lat, restaurant.lng),
-          map: map
-        });
-
-        const infoWindow = new window.naver.maps.InfoWindow({
-          content: `
-            <div style="padding: 10px;">
-              <strong>${restaurant.name}</strong>
-            </div>
-          `,
-        });
-
-        window.naver.maps.Event.addListener(
-          marker,
-          "click",
-          () => {
-            infoWindow.open(map, marker);
-          }
-        );
-      });
-
-      console.log("Naver Map 생성 완료", map);
-      console.log("마커 생성 완료", marker);
+      setMap(map);
     };
 
     document.head.appendChild(script);
@@ -66,7 +42,38 @@ function NaverMap() {
     return () => {
       document.head.removeChild(script);
     };
-  },[])
+  },[]);
+
+  // 마커생성
+  useEffect(() => {
+    if (!map || restaurants.length === 0) {
+      return;
+    }
+
+    restaurants.forEach((restaurant) => {
+      const marker = new window.naver.maps.Marker({
+        position: new window.naver.maps.LatLng(restaurant.latitude, restaurant.longitude),
+        map: map
+      });
+
+      const infoWindow = new window.naver.maps.InfoWindow({
+        content: `
+          <div style="padding: 10px;">
+            <strong>${restaurant.placeName}</strong>
+          </div>
+        `,
+      });
+
+      window.naver.maps.Event.addListener(
+        marker,
+        "click",
+        () => {
+          infoWindow.open(map, marker);
+        }
+      );
+    });
+    
+  },[map, restaurants]);
 
   return (
     <div 
