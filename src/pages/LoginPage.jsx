@@ -27,6 +27,8 @@ function LoginPage() {
       );
 
       console.log(response.data);
+      const accessToken = response.data.accessToken;
+      localStorage.setItem("accessToken", accessToken);
       alert("로그인에 성공했습니다.");
     }catch(error){
       console.error(error);
