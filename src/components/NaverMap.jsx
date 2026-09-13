@@ -5,21 +5,35 @@ function NaverMap() {
   
   const [restaurants, setRestaurants] = useState([]);
   const [map, setMap] = useState(null);
+  const [showSearchButton, setShowSearchButton] = useState(false);
   const mapRef = useRef(null);
+  const markersRef = useRef([]);
 
   // 음식점 정보
-  useEffect(() => {
-    const getPlaces = async () => {
-      try{
-        const response = await api.get("/api/places");
-        setRestaurants(response.data);
-      }catch(error){
-        console.error(error);
-        alert("맛집 정보를 불러오지 못했습니다.");
-      }
+  const getPlaces = async (swLat, swLng, neLat, neLng) => {
+
+    console.log("서버 요청:", {
+      swLat,
+      swLng,
+      neLat,
+      neLng
+    });
+    try{
+      const response = await api.get("/api/places", {
+        params: {
+          swLat,
+          swLng,
+          neLat,
+          neLng
+        }
+      });
+      console.log("서버 응답:", response.data);
+      setRestaurants(response.data);
+    }catch(error){
+      console.error(error);
+      alert("맛집 정보를 불러오지 못했습니다.");
     }
-    getPlaces();
-  },[]);
+  };
 
   // 지도생성
   useEffect(() => {
@@ -33,6 +47,31 @@ function NaverMap() {
         center: new window.naver.maps.LatLng(36.3504, 127.3845),
         zoom: 14,
       });
+
+      const bounds = map.getBounds();
+
+      const southWest = bounds.getSW();
+      const northEast = bounds.getNE();
+
+      console.log("초기 영역");
+      console.log("남서쪽 위도:", southWest.lat());
+      console.log("남서쪽 경도:", southWest.lng());
+      console.log("북동쪽 위도:", northEast.lat());
+      console.log("북동쪽 경도:", northEast.lng());
+      getPlaces(
+        southWest.lat(),
+        southWest.lng(),
+        northEast.lat(),
+        northEast.lng()
+      )
+
+      window.naver.maps.Event.addListener(
+        map,
+        "idle",
+        () => {
+          setShowSearchButton(true);
+        }
+      );
       
       setMap(map);
     };
@@ -46,10 +85,20 @@ function NaverMap() {
 
   // 마커생성
   useEffect(() => {
-    if (!map || restaurants.length === 0) {
+    console.log("마커 effect 실행", restaurants);
+    if (!map) {
       return;
     }
 
+    console.log("기존 마커 개수:", markersRef.current.length);
+
+    // 기존 마커 제거
+    markersRef.current.forEach((marker) => {
+      marker.setMap(null);
+    });
+    markersRef.current = [];
+
+    // 새로운 마커 생성
     restaurants.forEach((restaurant) => {
       const marker = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(restaurant.latitude, restaurant.longitude),
@@ -71,15 +120,54 @@ function NaverMap() {
           infoWindow.open(map, marker);
         }
       );
+
+      markersRef.current.push(marker);
     });
     
   },[map, restaurants]);
 
+  const handleSearch = () => {
+    if (!map) {
+      return;
+    }
+
+    const bounds = map.getBounds();
+
+    const southWest = bounds.getSW();
+    const northEast = bounds.getNE();
+
+    console.log("===== 검색 =====");
+    console.log("swLat:", southWest.lat());
+    console.log("swLng:", southWest.lng());
+    console.log("neLat:", northEast.lat());
+    console.log("neLng:", northEast.lng());
+
+    getPlaces(
+      southWest.lat(),
+      southWest.lng(),
+      northEast.lat(),
+      northEast.lng()
+    );
+
+    setShowSearchButton(false);
+  };
+
   return (
-    <div 
-      ref={mapRef} 
-      className="h-full w-full"
-    />
+    <div className="relative h-full w-full">
+      <div 
+        ref={mapRef} 
+        className="h-full w-full"
+      />
+
+      {showSearchButton && (
+        <button
+          onClick={handleSearch}
+          className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-white px-5 py-3 text-sm font-semibold shadow-md cursor-pointer transition hover:bg-gray-100"
+        >
+          현재 위치에서 검색
+        </button>
+      )}
+    </div>
   );
 }
 
