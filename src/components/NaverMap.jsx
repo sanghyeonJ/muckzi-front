@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../api/axios';
 
-function NaverMap({ selectedCategory, onRestaurantsChange }) {
+function NaverMap({ selectedCategory, onRestaurantsChange, selectedRestaurant, onRestaurantSelect }) {
   
   const [restaurants, setRestaurants] = useState([]);
   const [map, setMap] = useState(null);
@@ -91,31 +91,62 @@ function NaverMap({ selectedCategory, onRestaurantsChange }) {
         : restaurants.filter((restaurant) => restaurant.category === selectedCategory);
 
     filteredRestaurants.forEach((restaurant) => {
+      const isSelected = selectedRestaurant?.placeId === restaurant.placeId;
+
       const marker = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(restaurant.latitude, restaurant.longitude),
-        map: map
-      });
-
-      const infoWindow = new window.naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px;">
-            <strong>${restaurant.placeName}</strong>
-          </div>
-        `,
+        map: map,
+        icon: {
+          content: `
+            <div style="
+              width: ${isSelected ? "28px" : "20px"};
+              height: ${isSelected ? "28px" : "20px"};
+              border-radius: 50%;
+              background: ${isSelected ? "#000000" : "#ffffff"};
+              border: 3px solid #000000;
+              box-sizing: border-box;
+            "></div>
+          `,
+          anchor: new window.naver.maps.Point(
+            isSelected ? 14 : 10,
+            isSelected ? 14 : 10
+          )
+        }
       });
 
       window.naver.maps.Event.addListener(
         marker,
         "click",
         () => {
-          infoWindow.open(map, marker);
+          onRestaurantSelect(restaurant);
         }
       );
 
       markersRef.current.push(marker);
     });
     
-  },[map, restaurants, selectedCategory]);
+  },[
+    map,
+    restaurants,
+    selectedCategory,
+    selectedRestaurant,
+    onRestaurantSelect
+  ]);
+
+  useEffect(() => {
+
+    if (!map || !selectedRestaurant) {
+      return;
+    }
+
+    map.panTo(
+      new window.naver.maps.LatLng(
+        selectedRestaurant.latitude,
+        selectedRestaurant.longitude
+      )
+    );
+
+  }, [map, selectedRestaurant]);
 
   const handleSearch = () => {
     if (!map) {

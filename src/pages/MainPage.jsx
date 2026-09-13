@@ -4,6 +4,7 @@ import NaverMap from "../components/NaverMap";
 function MainPage() {
 
   const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
 
   const categories = [
@@ -53,6 +54,8 @@ function MainPage() {
         <NaverMap
           selectedCategory={selectedCategory}
           onRestaurantsChange={setRestaurants}
+          selectedRestaurant={selectedRestaurant}
+          onRestaurantSelect={setSelectedRestaurant}
         />
       </div>
 
@@ -87,62 +90,114 @@ function MainPage() {
         "
       >
 
-        {/* 목록 헤더 */}
-        <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-3 lg:px-5 lg:py-4">
+        {selectedRestaurant === null ? (
+          /* 목록 헤더 */
+          <>
+          <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-3 lg:px-5 lg:py-4">
 
-          {/* 모바일 Bottom Sheet 핸들 */}
-          <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-gray-300 lg:hidden" />
+            {/* 모바일 Bottom Sheet 핸들 */}
+            <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-gray-300 lg:hidden" />
 
-          <div className="flex items-center justify-between">
-            <h2 className="font-bold text-gray-900">
-              주변 음식점
-            </h2>
-            <span className="text-sm text-gray-500">
-              {filteredRestaurants.length}곳
-            </span>
-          </div>
-        </div>
-
-        {/* 음식점 목록 */}
-        <div className="space-y-3 px-4 pb-5 lg:p-3">
-
-          {filteredRestaurants.length === 0 ? (
-
-            <div className="rounded-xl bg-gray-50 p-5 text-center">
-              <p className="text-sm text-gray-500">
-                주변에 음식점이 없습니다.
-              </p>
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold text-gray-900">
+                주변 음식점
+              </h2>
+              <span className="text-sm text-gray-500">
+                {filteredRestaurants.length}곳
+              </span>
             </div>
+          </div>
 
-          ) : (
+          {/* 음식점 목록 */}
+          <div className="space-y-3 px-4 pb-5 lg:p-3">
 
-            filteredRestaurants.map((restaurant) => (
+            {filteredRestaurants.length === 0 ? (
 
-              <div
-                key={restaurant.placeId}
-                className="
-                  cursor-pointer
-                  rounded-xl
-                  bg-gray-50
-                  p-4
-                  transition
-                  hover:shadow-md
-                "
-              >
-                <h3 className="font-bold text-gray-900">
-                  {restaurant.placeName}
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  {restaurant.category}
-                </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  {restaurant.address}
+              <div className="rounded-xl bg-gray-50 p-5 text-center">
+                <p className="text-sm text-gray-500">
+                  주변에 음식점이 없습니다.
                 </p>
               </div>
 
-            ))
-          )}
-        </div>
+            ) : (
+
+              filteredRestaurants.map((restaurant) => (
+
+                <div
+                  key={restaurant.placeId}
+                  onClick={() => setSelectedRestaurant(restaurant)}
+                  className="
+                    cursor-pointer
+                    rounded-xl
+                    bg-gray-50
+                    p-4
+                    transition
+                    hover:shadow-md
+                  "
+                >
+                  <h3 className="font-bold text-gray-900">
+                    {restaurant.placeName}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {restaurant.category}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {restaurant.address}
+                  </p>
+                </div>
+
+              ))
+            )}
+          </div>
+          </>
+        ) : (
+          <div className="h-full">
+            <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 py-4 lg:px-5">
+
+              <button
+                onClick={() => setSelectedRestaurant(null)}
+                className="mb-3 text-sm text-gray-500 hover:text-gray-900"
+              >
+                ← 주변 음식점
+              </button>
+
+              <h2 className="text-xl font-bold text-gray-900">
+                {selectedRestaurant.placeName}
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-500">
+                {selectedRestaurant.category}
+              </p>
+
+            </div>
+
+            <div className="space-y-5 p-4 lg:p-5">
+
+              <div>
+                <h3 className="mb-2 font-bold text-gray-900">
+                  주소
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {selectedRestaurant.address}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="mb-2 font-bold text-gray-900">
+                  리뷰
+                </h3>
+                <div className="rounded-xl bg-gray-50 p-5 text-center">
+                  <p className="text-sm text-gray-500">
+                    아직 리뷰가 없습니다.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        )}
+        
       </aside>
     </div>
   </div>
