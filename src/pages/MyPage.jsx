@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 
+import MuckziSwal from '../utils/swal';
+
 function MyPage() {
 
   const [user, setUser] = useState(null);
@@ -18,7 +20,9 @@ function MyPage() {
       } catch (error) {
 
         console.error(error);
-        alert("내 정보를 불러오지 못했습니다.");
+        MuckziSwal.fire({
+          text: "내 정보를 불러오지 못했습니다."
+        });
 
       }
 

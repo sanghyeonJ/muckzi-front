@@ -2,6 +2,9 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import { toast } from 'sonner';
+import MuckziSwal from '../utils/swal';
+
 function LoginPage() {
 
   const navigate = useNavigate();
@@ -11,11 +14,15 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(!userId.trim()){
-      alert("아이디를 입력해주세요.");
+      MuckziSwal.fire({
+        text: "아이디를 입력해주세요."
+      });
       return;
     }
     if(!password.trim()){
-      alert("비밀번호를 입력해주세요.");
+      MuckziSwal.fire({
+        text: "비밀번호를 입력해주세요."
+      });
       return;
     }
 
@@ -31,11 +38,13 @@ function LoginPage() {
       const accessToken = response.data.accessToken;
       localStorage.setItem("accessToken", accessToken);
 
-      alert("로그인에 성공했습니다.");
+      toast.success("로그인에 성공했습니다.");
       navigate("/");
     }catch(error){
       console.error(error);
-      alert(error.response?.data?.message || "로그인에 실패했습니다.");
+      MuckziSwal.fire({
+        text: error.response?.data?.message || "로그인에 실패했습니다."
+      });
     }
   }
 

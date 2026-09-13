@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../api/axios';
 
+import MuckziSwal from '../utils/swal';
+
 function NaverMap({ selectedCategory, onRestaurantsChange, selectedRestaurant, onRestaurantSelect }) {
   
   const [restaurants, setRestaurants] = useState([]);
@@ -25,7 +27,9 @@ function NaverMap({ selectedCategory, onRestaurantsChange, selectedRestaurant, o
       onRestaurantsChange(response.data);
     }catch(error){
       console.error(error);
-      alert("맛집 정보를 불러오지 못했습니다.");
+      MuckziSwal.fire({
+        text: "맛집 정보를 불러오지 못했습니다."
+      });
     }
   };
 

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import { toast } from 'sonner';
+import MuckziSwal from '../utils/swal';
+
 function SignupPage() {
 
   const navigate = useNavigate();
@@ -13,15 +16,21 @@ function SignupPage() {
 
     e.preventDefault();
     if(!userId.trim()){
-      alert("아이디를 입력해주세요.");
+      MuckziSwal.fire({
+        text: "아이디를 입력해주세요."
+      });
       return;
     }
     if(!password.trim()){
-      alert("비밀번호를 입력해주세요.");
+      MuckziSwal.fire({
+        text: "비밀번호를 입력해주세요."
+      });
       return;
     }
     if(!nickname.trim()){
-      alert("닉네임을 입력해주세요.");
+      MuckziSwal.fire({
+        text: "닉네임을 입력해주세요."
+      });
       return;
     }
 
@@ -35,12 +44,13 @@ function SignupPage() {
         }
       );
 
-      console.log(response);
-      alert("회원가입이 완료되었습니다.");
+      toast.success("회원가입이 완료되었습니다.");
       navigate("/login");
     }catch(error){
       console.error(error);
-      alert(error.response?.data?.message ||"회원가입에 실패했습니다.");
+      MuckziSwal.fire({
+        text: error.response?.data?.message ||"회원가입에 실패했습니다."
+      });
     }
   }
 
