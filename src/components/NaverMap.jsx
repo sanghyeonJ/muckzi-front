@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../api/axios';
 
-function NaverMap() {
+function NaverMap({ selectedCategory }) {
   
   const [restaurants, setRestaurants] = useState([]);
   const [map, setMap] = useState(null);
@@ -12,12 +12,6 @@ function NaverMap() {
   // 음식점 정보
   const getPlaces = async (swLat, swLng, neLat, neLng) => {
 
-    console.log("서버 요청:", {
-      swLat,
-      swLng,
-      neLat,
-      neLng
-    });
     try{
       const response = await api.get("/api/places", {
         params: {
@@ -27,7 +21,6 @@ function NaverMap() {
           neLng
         }
       });
-      console.log("서버 응답:", response.data);
       setRestaurants(response.data);
     }catch(error){
       console.error(error);
@@ -53,11 +46,6 @@ function NaverMap() {
       const southWest = bounds.getSW();
       const northEast = bounds.getNE();
 
-      console.log("초기 영역");
-      console.log("남서쪽 위도:", southWest.lat());
-      console.log("남서쪽 경도:", southWest.lng());
-      console.log("북동쪽 위도:", northEast.lat());
-      console.log("북동쪽 경도:", northEast.lng());
       getPlaces(
         southWest.lat(),
         southWest.lng(),
@@ -85,12 +73,9 @@ function NaverMap() {
 
   // 마커생성
   useEffect(() => {
-    console.log("마커 effect 실행", restaurants);
     if (!map) {
       return;
     }
-
-    console.log("기존 마커 개수:", markersRef.current.length);
 
     // 기존 마커 제거
     markersRef.current.forEach((marker) => {
@@ -99,7 +84,12 @@ function NaverMap() {
     markersRef.current = [];
 
     // 새로운 마커 생성
-    restaurants.forEach((restaurant) => {
+    const filteredRestaurants = 
+      selectedCategory === "전체"
+        ? restaurants
+        : restaurants.filter((restaurant) => restaurant.category === selectedCategory);
+
+    filteredRestaurants.forEach((restaurant) => {
       const marker = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(restaurant.latitude, restaurant.longitude),
         map: map
@@ -124,7 +114,7 @@ function NaverMap() {
       markersRef.current.push(marker);
     });
     
-  },[map, restaurants]);
+  },[map, restaurants, selectedCategory]);
 
   const handleSearch = () => {
     if (!map) {
@@ -135,12 +125,6 @@ function NaverMap() {
 
     const southWest = bounds.getSW();
     const northEast = bounds.getNE();
-
-    console.log("===== 검색 =====");
-    console.log("swLat:", southWest.lat());
-    console.log("swLng:", southWest.lng());
-    console.log("neLat:", northEast.lat());
-    console.log("neLng:", northEast.lng());
 
     getPlaces(
       southWest.lat(),
