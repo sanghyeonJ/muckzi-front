@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../api/axios';
 
-function NaverMap({ selectedCategory }) {
+function NaverMap({ selectedCategory, onRestaurantsChange }) {
   
   const [restaurants, setRestaurants] = useState([]);
   const [map, setMap] = useState(null);
@@ -22,6 +22,7 @@ function NaverMap({ selectedCategory }) {
         }
       });
       setRestaurants(response.data);
+      onRestaurantsChange(response.data);
     }catch(error){
       console.error(error);
       alert("맛집 정보를 불러오지 못했습니다.");

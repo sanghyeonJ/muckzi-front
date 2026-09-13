@@ -4,6 +4,8 @@ import NaverMap from "../components/NaverMap";
 function MainPage() {
 
   const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [restaurants, setRestaurants] = useState([]);
+
   const categories = [
     "전체",
     "한식",
@@ -14,42 +16,137 @@ function MainPage() {
     "술집"
   ];
 
+  const filteredRestaurants = 
+    selectedCategory === "전체" 
+    ? restaurants
+    : restaurants.filter((restaurant) => restaurant.category === selectedCategory);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 카테고리 */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3">
-          {categories.map((category) => (
-            <button 
-              key={category} 
-              className={`shrink-0 rounded-full px-4 py-2 text-sm cursor-pointer ${
-                selectedCategory === category
-                  ? "bg-black text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
+  <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">
+
+    {/* 카테고리 */}
+    <div className="shrink-0 border-b border-gray-200 bg-white">
+      <div className="flex gap-2 overflow-x-auto px-4 py-3">
+
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`shrink-0 rounded-full px-4 py-2 text-sm ${
+              selectedCategory === category
+                ? "bg-black text-white"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {category}
+          </button>
+        ))}
+
       </div>
+    </div>
+
+    {/* 지도 + 음식점 목록 */}
+    <div className="relative min-h-0 flex-1">
 
       {/* 지도 */}
-      <div className="h-[500px] bg-gray-200 flex items-center justify-center">
-        <NaverMap selectedCategory={selectedCategory} />
+      <div className="h-full lg:ml-80">
+        <NaverMap
+          selectedCategory={selectedCategory}
+          onRestaurantsChange={setRestaurants}
+        />
       </div>
 
       {/* 음식점 목록 */}
-      <div className="mx-auto max-w-6xl px-4 py-6">
-          <h2 className="mb-4 text-lg font-bold text-gray-900">주변 음식점</h2>
+      <aside
+        className="
+          absolute
+          bottom-0
+          left-0
+          right-0
+          z-20
+          max-h-[45%]
+          overflow-y-auto
+          rounded-t-3xl
+          bg-white
+          shadow-[0_-4px_20px_rgba(0,0,0,0.12)]
 
-          <div className="rounded-2xl bg-white p-6 shadow-sm">
-            <p className="text-sm text-gray-500">음식점 목록이 표시됩니다.</p>
+          lg:inset-y-0
+          lg:left-0
+          lg:right-auto
+          lg:bottom-auto
+          lg:z-10
+          lg:h-full
+          lg:max-h-none
+          lg:w-80
+          lg:overflow-y-auto
+          lg:rounded-none
+          lg:rounded-r-2xl
+          lg:border-r
+          lg:border-gray-200
+          lg:shadow-none
+        "
+      >
+
+        {/* 목록 헤더 */}
+        <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-3 lg:px-5 lg:py-4">
+
+          {/* 모바일 Bottom Sheet 핸들 */}
+          <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-gray-300 lg:hidden" />
+
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-gray-900">
+              주변 음식점
+            </h2>
+            <span className="text-sm text-gray-500">
+              {filteredRestaurants.length}곳
+            </span>
           </div>
-      </div>
+        </div>
+
+        {/* 음식점 목록 */}
+        <div className="space-y-3 px-4 pb-5 lg:p-3">
+
+          {filteredRestaurants.length === 0 ? (
+
+            <div className="rounded-xl bg-gray-50 p-5 text-center">
+              <p className="text-sm text-gray-500">
+                주변에 음식점이 없습니다.
+              </p>
+            </div>
+
+          ) : (
+
+            filteredRestaurants.map((restaurant) => (
+
+              <div
+                key={restaurant.placeId}
+                className="
+                  cursor-pointer
+                  rounded-xl
+                  bg-gray-50
+                  p-4
+                  transition
+                  hover:shadow-md
+                "
+              >
+                <h3 className="font-bold text-gray-900">
+                  {restaurant.placeName}
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  {restaurant.category}
+                </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  {restaurant.address}
+                </p>
+              </div>
+
+            ))
+          )}
+        </div>
+      </aside>
     </div>
-  );
+  </div>
+);
 }
 
 export default MainPage;
