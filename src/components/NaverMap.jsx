@@ -10,6 +10,7 @@ function NaverMap({ selectedCategory, onRestaurantsChange, selectedRestaurant, o
   const [showSearchButton, setShowSearchButton] = useState(false);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
+  const selectedMarkerRef = useRef(null);
 
   // 음식점 정보
   const getPlaces = async (swLat, swLng, neLat, neLng) => {
@@ -150,6 +151,39 @@ function NaverMap({ selectedCategory, onRestaurantsChange, selectedRestaurant, o
       )
     );
 
+  }, [map, selectedRestaurant]);
+
+  useEffect(() => {
+    if (!map || !selectedRestaurant) return;
+
+    const position = new window.naver.maps.LatLng(
+      selectedRestaurant.latitude,
+      selectedRestaurant.longitude
+    );
+
+    map.panTo(position);
+
+    if (selectedMarkerRef.current) {
+      selectedMarkerRef.current.setMap(null);
+    }
+
+    selectedMarkerRef.current = new window.naver.maps.Marker({
+      position,
+      map,
+      icon: {
+        content: `
+          <div style="
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #000000;
+            border: 4px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          "></div>
+        `,
+        anchor: new window.naver.maps.Point(14, 14)
+      }
+    });
   }, [map, selectedRestaurant]);
 
   const handleSearch = () => {

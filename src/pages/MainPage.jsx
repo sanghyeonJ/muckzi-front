@@ -11,6 +11,8 @@ function MainPage() {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const categories = [
     "전체",
@@ -22,8 +24,47 @@ function MainPage() {
     "술집"
   ];
 
+  const searchPlaces = async (query) => {
+    if (!query.trim()) {
+      MuckziSwal.fire({
+        text: "검색어를 입력해주세요."
+      });
+      return;
+    }
+
+    try{
+      const response = await api.get("api/naver/places",{
+        params: {query}
+      });
+      setSearchResults(response.data);
+    }catch(error) {
+      MuckziSwal.fire({
+        text: "장소 검색에 실패했습니다."
+      });
+    }
+  }
+
+  const handleSearchResultClick = (place) => {
+    const restaurant = {
+      placeId: null,
+      placeName: place.title.replace(/<[^>]*>/g, ""),
+      category: place.category,
+      address: place.roadAddress || place.address,
+      latitude: place.latitude,
+      longitude: place.longitude,
+      isNaverPlace: true,
+    };
+
+    setSelectedRestaurant(restaurant);
+  };
+
   useEffect(() => {
     if(!selectedRestaurant){
+      setReviews([]);
+      return;
+    }
+
+    if (!selectedRestaurant.placeId) {
       setReviews([]);
       return;
     }
@@ -49,7 +90,30 @@ function MainPage() {
 
   return (
   <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">
+    {/* 검색 */}
+    <div className="shrink-0 border-b border-gray-200 bg-white px-4 py-3">
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              searchPlaces(searchKeyword);
+            }
+          }}
+          placeholder="음식점을 검색해보세요."
+          className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-400"
+        />
 
+        <button
+          onClick={() => searchPlaces(searchKeyword)}
+          className="shrink-0 rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+        >
+          검색
+        </button>
+      </div>
+    </div>
     {/* 카테고리 */}
     <div className="shrink-0 border-b border-gray-200 bg-white">
       <div className="flex gap-2 overflow-x-auto px-4 py-3">
@@ -132,6 +196,37 @@ function MainPage() {
               </span>
             </div>
           </div>
+
+          {searchResults.length > 0 && (
+            <div className="border-b border-gray-200 px-4 pb-4 lg:px-5">
+              <h3 className="mb-3 font-bold text-gray-900">
+                검색 결과
+              </h3>
+
+              <div className="space-y-2">
+                {searchResults.map((place, index) => (
+                  <div
+                    key={`${place.title}-${index}`}
+                    onClick={() => handleSearchResultClick(place)}
+                    className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
+                  >
+                    <h4
+                      className="font-bold text-gray-900"
+                      dangerouslySetInnerHTML={{ __html: place.title }}
+                    />
+
+                    <p className="mt-1 text-sm text-gray-500">
+                      {place.category}
+                    </p>
+
+                    <p className="mt-1 text-sm text-gray-500">
+                      {place.roadAddress || place.address}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 음식점 목록 */}
           <div className="space-y-3 px-4 pb-5 lg:p-3">
