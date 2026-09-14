@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NaverMap from "../components/NaverMap";
+
+import api from "../api/axios";
+
+import MuckziSwal from '../utils/swal';
 
 function MainPage() {
 
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   const categories = [
     "전체",
@@ -16,6 +21,26 @@ function MainPage() {
     "카페",
     "술집"
   ];
+
+  useEffect(() => {
+    if(!selectedRestaurant){
+      setReviews([]);
+      return;
+    }
+
+    const getReviews = async () => {
+      try{
+        const response = await api.get(`/api/places/${selectedRestaurant.placeId}/reviews`);
+        setReviews(response.data);
+      }catch(error) {
+        Muckzi.fire({
+          message: "리뷰를 찾을 수 없습니다."
+        });
+      }
+    }
+
+    getReviews();
+  }, [selectedRestaurant]);
 
   const filteredRestaurants = 
     selectedCategory === "전체" 
@@ -158,7 +183,7 @@ function MainPage() {
                 onClick={() => setSelectedRestaurant(null)}
                 className="mb-3 text-sm text-gray-500 hover:text-gray-900"
               >
-                ← 주변 음식점
+                ← 목록
               </button>
 
               <h2 className="text-xl font-bold text-gray-900">
@@ -183,14 +208,46 @@ function MainPage() {
               </div>
 
               <div>
-                <h3 className="mb-2 font-bold text-gray-900">
-                  리뷰
-                </h3>
-                <div className="rounded-xl bg-gray-50 p-5 text-center">
-                  <p className="text-sm text-gray-500">
-                    아직 리뷰가 없습니다.
-                  </p>
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="font-bold text-gray-900">
+                    리뷰
+                  </h3>
+
+                  <span className="text-sm text-gray-500">
+                    {reviews.length}개
+                  </span>
                 </div>
+
+                {reviews.length === 0 ? (
+                  <div className="rounded-xl bg-gray-50 p-5 text-center">
+                    <p className="text-sm text-gray-500">
+                      아직 리뷰가 없습니다.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {reviews.map((review) => (
+                      <div
+                        key={review.reviewId}
+                        className="rounded-xl bg-gray-50 p-4"
+                      >
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="font-semibold text-gray-900">
+                            {review.nickname}
+                          </span>
+
+                          <span className="text-xs text-gray-400">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+
+                        <p className="text-sm leading-6 text-gray-700">
+                          {review.content}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </div>
