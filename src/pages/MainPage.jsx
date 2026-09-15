@@ -216,13 +216,6 @@ function MainPage() {
         placeId,
       }));
 
-      // 등록된 리뷰를 다시 조회
-      const reviewResponse = await api.get(
-        `/api/places/${placeId}/reviews`
-      );
-
-      setReviews(reviewResponse.data);
-
       MuckziSwal.fire({
         text: "리뷰가 등록되었습니다.",
       });
