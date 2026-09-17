@@ -3,7 +3,9 @@ function RestaurantDetail({
   reviews,
   handleReviewSubmit,
   isSubmittingReview,
-  setSelectedRestaurant
+  setSelectedRestaurant,
+  isBookmarked,
+  handleBookmark
 }){
   return (
     <div className="h-full">
@@ -19,9 +21,20 @@ function RestaurantDetail({
           ← 목록
         </button>
 
-        <h2 className="text-xl font-bold text-gray-900">
-          {selectedRestaurant.placeName}
-        </h2>
+        <div className="flex align-start">
+          <h2 className="text-xl font-bold text-gray-900">
+            {selectedRestaurant.placeName}
+          </h2>
+          {isBookmarked? (
+            <button
+              onClick={handleBookmark}
+            >🩶</button>
+          ) : (
+            <button
+              onClick={handleBookmark}
+            >❤️</button>
+          )}
+        </div>
 
         <p className="mt-1 text-sm text-gray-500">
           {selectedRestaurant.category}

@@ -27,6 +27,9 @@ function MainPage() {
   // 리뷰 등록 진행 여부
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
+  // 북마크 여부
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
   // 음식점 카테고리 목록
   const categories = [
     "전체",
@@ -234,6 +237,94 @@ function MainPage() {
     }
   };
 
+  // 북마크 여부 조회
+  useEffect(() => {
+    if (!selectedRestaurant) {
+      setIsBookmarked(false);
+      return;
+    }
+    if (!selectedRestaurant.placeId) {
+      setIsBookmarked(false);
+      return;
+    }
+    const accessToken = localStorage.getItem("accessToken");
+    if(!accessToken) {
+      return;
+    }
+    const getBookmark = async () => {
+      try {
+        const response = await api.get(`/api/places/${selectedRestaurant.placeId}/bookmark`);
+        setIsBookmarked(response.data.bookmarked);
+      } catch (error) {
+        setIsBookmarked(false);
+        MuckziSwal.fire({
+          text: error.response?.data?.message ||
+          "북마크 조회에 실패했습니다."
+        })
+      }
+    }
+
+    getBookmark();
+  }, [selectedRestaurant]);
+
+  // 북마크 버튼 이벤트
+  const handleBookmark = async () => {
+    if (!selectedRestaurant) {
+      return;
+    }
+
+    // 로그인여부 확인
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      MuckziSwal.fire({
+        text: "로그인이 필요합니다."
+      });
+      return;
+    }
+
+    try {
+      // 이미 북마크 되어있을 경우
+      if (isBookmarked) {
+        await api.delete(`/api/places/${selectedRestaurant.placeId}/bookmark`);
+        setIsBookmarked(false);
+
+        MuckziSwal.fire({
+          text: "북마크가 삭제되었습니다."
+        });
+        return;
+      }
+
+      // 새로운 북마크
+      const response = await api.post(`/api/places/bookmark`, {
+        placeName: selectedRestaurant.placeName,
+        category: selectedRestaurant.category,
+        address: selectedRestaurant.address,
+        latitude: selectedRestaurant.latitude,
+        longitude: selectedRestaurant.longitude,
+      });
+
+      const placeId = response.data.placeId;
+
+      setSelectedRestaurant((prev) => ({
+        ...prev,
+        placeId
+      }));
+      setIsBookmarked(true);
+
+      MuckziSwal.fire({
+        text: "북마크가 등록되었습니다."
+      });
+    } catch (error) {
+      console.error(error);
+
+      MuckziSwal.fire({
+        text:
+          error.response?.data?.message ||
+          "북마크 처리에 실패했습니다.",
+      });
+    }
+  }
+
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">
 
@@ -426,6 +517,8 @@ function MainPage() {
               handleReviewSubmit={handleReviewSubmit}
               isSubmittingReview={isSubmittingReview}
               setSelectedRestaurant={setSelectedRestaurant}
+              isBookmarked={isBookmarked}
+              handleBookmark={handleBookmark}
             />
           )}
         </aside>
