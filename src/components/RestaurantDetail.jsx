@@ -1,3 +1,5 @@
+import { Star } from "lucide-react";
+
 function RestaurantDetail({
   selectedRestaurant,
   reviews,
@@ -21,19 +23,19 @@ function RestaurantDetail({
           ← 목록
         </button>
 
-        <div className="flex align-start">
-          <h2 className="text-xl font-bold text-gray-900">
+        <div className="flex gap-4 items-start">
+          <h2 className="text-xl font-bold text-gray-900 basis-full">
             {selectedRestaurant.placeName}
           </h2>
-          {isBookmarked? (
-            <button
-              onClick={handleBookmark}
-            >🩶</button>
-          ) : (
-            <button
-              onClick={handleBookmark}
-            >❤️</button>
-          )}
+          <button
+            className="flex-none flex items-center justify-center w-10 h-10 rounded-lg bg-white shadow-md hover:bg-gray-100 active:scale-95 transition"
+            onClick={handleBookmark}
+          >
+            <Star
+              size={20}
+              fill={isBookmarked ? "currentColor" : "none"}
+            />
+          </button>
         </div>
 
         <p className="mt-1 text-sm text-gray-500">

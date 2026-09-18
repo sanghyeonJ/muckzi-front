@@ -24,6 +24,9 @@ function MainPage() {
   // 검색창에 입력된 검색어
   const [searchKeyword, setSearchKeyword] = useState("");
 
+  // 검색상태 여부
+  const [isSearched, setIsSearched] = useState(false);
+
   // 현재 지도 영역
   const [mapBounds, setMapBounds] = useState(null);
 
@@ -52,10 +55,8 @@ function MainPage() {
   const searchPlaces = async (query) => {
     // 검색어가 비어 있으면 API 요청하지 않음
     if (!query.trim()) {
-      MuckziSwal.fire({
-        text: "검색어를 입력해주세요."
-      });
-
+      setIsSearched(false);
+      setSearchResults([]);
       return;
     }
     if (!mapBounds) {
@@ -76,9 +77,10 @@ function MainPage() {
           neLng: mapBounds.neLng,
         },
       });
-
+      setIsSearched(true);
       setSearchResults(response.data);
     }catch(error) {
+      setIsSearched(false);
       console.error(error);
       MuckziSwal.fire({
         text: "장소 검색에 실패했습니다."
@@ -436,38 +438,46 @@ function MainPage() {
           {selectedRestaurant === null ? (
             <>
               {/* 네이버 검색 결과 */}
-              {searchResults.length > 0 && (
-                <div className="border-b border-gray-200 px-4 pb-4 pt-4 lg:px-5">
-                  <h3 className="mb-3 font-bold text-gray-900">
-                    검색 결과
-                  </h3>
-
-                  <div className="space-y-2">
-                    {searchResults.map((place) => (
-                    <div
-                      key={place.kakaoPlaceId}
-                      onClick={() => handleSearchResultClick(place)}
-                      className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
-                    >
-                      <h4 className="font-bold text-gray-900">
-                        {place.placeName}
-                      </h4>
-
-                      <p className="mt-1 text-sm text-gray-500">
-                        {place.filterCategory}
-                      </p>
-
-                      <p className="mt-1 text-sm text-gray-500">
-                        {place.address}
-                      </p>
+              {isSearched && (
+                <>
+                {searchResults.length > 0 ? (
+                  <div className="border-b border-gray-200 px-4 pb-4 pt-4 lg:px-5">
+                    <h3 className="mb-3 font-bold text-gray-900">
+                      검색 결과
+                    </h3>
+  
+                    <div className="space-y-2">
+                      {searchResults.map((place) => (
+                      <div
+                        key={place.kakaoPlaceId}
+                        onClick={() => handleSearchResultClick(place)}
+                        className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
+                      >
+                        <h4 className="font-bold text-gray-900">
+                          {place.placeName}
+                        </h4>
+  
+                        <p className="mt-1 text-sm text-gray-500">
+                          {place.filterCategory}
+                        </p>
+  
+                        <p className="mt-1 text-sm text-gray-500">
+                          {place.address}
+                        </p>
+                      </div>
+                    ))}
                     </div>
-                  ))}
                   </div>
-                </div>
+                ) : (
+                  <p className="py-4 text-center text-sm text-gray-500">
+                    검색 결과가 없습니다.
+                  </p>
+                )}
+                </>
               )}
 
               {/* 목록 헤더 */}
-              <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-3 lg:px-5 lg:py-4">
+              <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-3 lg:px-5 lg:py-4 lg:pb-2">
 
                 {/* 모바일 Bottom Sheet 핸들 */}
                 <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-gray-300 lg:hidden" />
