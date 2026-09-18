@@ -18,11 +18,14 @@ function MainPage() {
   // 현재 선택된 음식점의 리뷰 목록
   const [reviews, setReviews] = useState([]);
 
-  // 네이버 장소 검색 결과
+  // 카카오 장소 검색 결과
   const [searchResults, setSearchResults] = useState([]);
 
   // 검색창에 입력된 검색어
   const [searchKeyword, setSearchKeyword] = useState("");
+
+  // 현재 지도 영역
+  const [mapBounds, setMapBounds] = useState(null);
 
   // 리뷰 등록 진행 여부
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
@@ -39,9 +42,13 @@ function MainPage() {
     "양식",
     "카페",
     "술집",
+    "치킨",
+    "분식",
+    "패스트푸드",
+    "기타",
   ];
 
-  // 네이버 장소 검색
+  // 카카오 장소 검색
   const searchPlaces = async (query) => {
     // 검색어가 비어 있으면 API 요청하지 않음
     if (!query.trim()) {
@@ -51,58 +58,63 @@ function MainPage() {
 
       return;
     }
+    if (!mapBounds) {
+      MuckziSwal.fire({
+        text: "지도 정보를 불러오는 중입니다.",
+      });
+      return;
+    }
+
 
     try{
-      const response = await api.get("/api/naver/places",{
-        params: {query}
+      const response = await api.get("/api/kakao/places", {
+        params: {
+          query,
+          swLat: mapBounds.swLat,
+          swLng: mapBounds.swLng,
+          neLat: mapBounds.neLat,
+          neLng: mapBounds.neLng,
+        },
       });
+
       setSearchResults(response.data);
     }catch(error) {
+      console.error(error);
       MuckziSwal.fire({
         text: "장소 검색에 실패했습니다."
       });
     }
   };
 
-  // 네이버 검색 결과에서 음식점 선택
+  // 카카오 검색 결과에서 음식점 선택
   const handleSearchResultClick = (place) => {
-    // 네이버 검색 결과의 음식점 이름에서 HTML 태그 제거
-    const placeName = place.title.replace(/<[^>]*>/g, "");
-
-    // 네이버 검색 결과에서 사용할 주소
-    const address = place.roadAddress || place.address;
 
     // 현재 지도에 불러온 Muckzi 음식점 중
     // 같은 음식점이 이미 존재하는지 확인
     const existingRestaurant = restaurants.find(
       (restaurant) =>
-        restaurant.placeName === placeName &&
-        restaurant.address === address
+        restaurant.placeName === place.placeName &&
+        restaurant.address === place.address
     );
 
     // 이미 Muckzi에 등록된 음식점이라면
     // 기존 음식점 정보를 사용한다.
-    //
-    // 기존 placeId를 그대로 사용하기 때문에
-    // 선택 직후 해당 음식점의 리뷰를 조회할 수 있다.
     if (existingRestaurant) {
       setSelectedRestaurant(existingRestaurant);
       return;
     }
 
     // 아직 Muckzi에 등록되지 않은 음식점이라면
-    // 네이버 검색 결과를 임시 음식점 정보로 사용한다.
-    //
-    // placeId가 없기 때문에 현재는 리뷰 조회가 이루어지지 않는다.
-    // 이후 리뷰를 등록하면 백엔드에서 Place가 생성되고 placeId를 받는다.
+    // 카카오 검색 결과를 임시 음식점 정보로 사용한다.
     const restaurant = {
       placeId: null,
-      placeName,
+      kakaoPlaceId: place.kakaoPlaceId,
+      placeName: place.placeName,
       category: place.category,
-      address,
+      filterCategory: place.filterCategory,
+      address: place.address,
       latitude: place.latitude,
       longitude: place.longitude,
-      isNaverPlace: true,
     };
 
     setSelectedRestaurant(restaurant);
@@ -147,7 +159,8 @@ function MainPage() {
     selectedCategory === "전체"
       ? restaurants
       : restaurants.filter(
-          (restaurant) => restaurant.category === selectedCategory
+          (restaurant) =>
+            restaurant.filterCategory === selectedCategory
         );
 
   // 리뷰 작성
@@ -202,6 +215,7 @@ function MainPage() {
       const response = await api.post("/api/places/reviews", {
         placeName: selectedRestaurant.placeName,
         category: selectedRestaurant.category,
+        filterCategory: selectedRestaurant.filterCategory,
         address: selectedRestaurant.address,
         latitude: selectedRestaurant.latitude,
         longitude: selectedRestaurant.longitude,
@@ -298,6 +312,7 @@ function MainPage() {
       const response = await api.post(`/api/places/bookmark`, {
         placeName: selectedRestaurant.placeName,
         category: selectedRestaurant.category,
+        filterCategory: selectedRestaurant.filterCategory,
         address: selectedRestaurant.address,
         latitude: selectedRestaurant.latitude,
         longitude: selectedRestaurant.longitude,
@@ -383,6 +398,7 @@ function MainPage() {
             onRestaurantsChange={setRestaurants}
             selectedRestaurant={selectedRestaurant}
             onRestaurantSelect={setSelectedRestaurant}
+            onMapBoundsChange={setMapBounds}
           />
         </div>
 
@@ -419,6 +435,37 @@ function MainPage() {
           {/* 선택된 음식점이 없을 때 → 목록 화면 */}
           {selectedRestaurant === null ? (
             <>
+              {/* 네이버 검색 결과 */}
+              {searchResults.length > 0 && (
+                <div className="border-b border-gray-200 px-4 pb-4 pt-4 lg:px-5">
+                  <h3 className="mb-3 font-bold text-gray-900">
+                    검색 결과
+                  </h3>
+
+                  <div className="space-y-2">
+                    {searchResults.map((place) => (
+                    <div
+                      key={place.kakaoPlaceId}
+                      onClick={() => handleSearchResultClick(place)}
+                      className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
+                    >
+                      <h4 className="font-bold text-gray-900">
+                        {place.placeName}
+                      </h4>
+
+                      <p className="mt-1 text-sm text-gray-500">
+                        {place.filterCategory}
+                      </p>
+
+                      <p className="mt-1 text-sm text-gray-500">
+                        {place.address}
+                      </p>
+                    </div>
+                  ))}
+                  </div>
+                </div>
+              )}
+
               {/* 목록 헤더 */}
               <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-3 lg:px-5 lg:py-4">
 
@@ -436,39 +483,6 @@ function MainPage() {
                 </div>
               </div>
 
-              {/* 네이버 검색 결과 */}
-              {searchResults.length > 0 && (
-                <div className="border-b border-gray-200 px-4 pb-4 lg:px-5">
-                  <h3 className="mb-3 font-bold text-gray-900">
-                    검색 결과
-                  </h3>
-
-                  <div className="space-y-2">
-                    {searchResults.map((place, index) => (
-                      <div
-                        key={`${place.title}-${index}`}
-                        onClick={() => handleSearchResultClick(place)}
-                        className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
-                      >
-                        <h4
-                          className="font-bold text-gray-900"
-                          dangerouslySetInnerHTML={{
-                            __html: place.title,
-                          }}
-                        />
-
-                        <p className="mt-1 text-sm text-gray-500">
-                          {place.category}
-                        </p>
-
-                        <p className="mt-1 text-sm text-gray-500">
-                          {place.roadAddress || place.address}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* 현재 지도 영역의 음식점 목록 */}
               <div className="space-y-3 px-4 pb-5 lg:p-3">

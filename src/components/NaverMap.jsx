@@ -7,6 +7,7 @@ function NaverMap({
   onRestaurantsChange,
   selectedRestaurant,
   onRestaurantSelect,
+  onMapBoundsChange
 }) {
   // 현재 지도 영역에 표시할 음식점 목록
   const [restaurants, setRestaurants] = useState([]);
@@ -49,6 +50,21 @@ function NaverMap({
     }
   };
 
+  // 현재 지도 영역을 MainPage에 전달
+  const updateMapBounds = (map) => {
+    const bounds = map.getBounds();
+
+    const southWest = bounds.getSW();
+    const northEast = bounds.getNE();
+
+    onMapBoundsChange({
+      swLat: southWest.lat(),
+      swLng: southWest.lng(),
+      neLat: northEast.lat(),
+      neLng: northEast.lng(),
+    });
+  };
+
   // 네이버 지도 생성
   useEffect(() => {
     const script = document.createElement("script");
@@ -68,6 +84,9 @@ function NaverMap({
       const southWest = bounds.getSW();
       const northEast = bounds.getNE();
 
+      // 현재 지도 영역을 MainPage에 전달
+      updateMapBounds(map);
+
       // 처음 지도 영역의 음식점 조회
       getPlaces(
         southWest.lat(),
@@ -79,6 +98,7 @@ function NaverMap({
       // 지도가 움직임을 멈출 때마다
       // "현재 위치에서 검색" 버튼 표시
       window.naver.maps.Event.addListener(map, "idle", () => {
+        updateMapBounds(map);
         setShowSearchButton(true);
       });
 
@@ -111,7 +131,8 @@ function NaverMap({
       selectedCategory === "전체"
         ? restaurants
         : restaurants.filter(
-            (restaurant) => restaurant.category === selectedCategory
+            (restaurant) =>
+              restaurant.filterCategory === selectedCategory
           );
 
     // 음식점마다 일반 마커 생성
