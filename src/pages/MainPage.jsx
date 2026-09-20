@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import NaverMap from "../components/NaverMap";
+import KakaoMap from "../components/KakaoMap";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 import RestaurantDetail from "../components/RestaurantDetail";
@@ -395,12 +395,12 @@ function MainPage() {
 
         {/* 지도 */}
         <div className="h-full lg:ml-80">
-          <NaverMap
+          <KakaoMap 
             selectedCategory={selectedCategory}
             onRestaurantsChange={setRestaurants}
-            selectedRestaurant={selectedRestaurant}
-            onRestaurantSelect={setSelectedRestaurant}
             onMapBoundsChange={setMapBounds}
+            onRestaurantSelect={setSelectedRestaurant}
+            selectedRestaurant={selectedRestaurant}
           />
         </div>
 

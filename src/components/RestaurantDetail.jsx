@@ -18,7 +18,7 @@ function RestaurantDetail({
         {/* 목록으로 돌아가기 */}
         <button
           onClick={() => setSelectedRestaurant(null)}
-          className="mb-3 text-sm text-gray-500 hover:text-gray-900"
+          className="mb-3 text-sm text-gray-500 cursor-pointer hover:text-gray-900"
         >
           ← 목록
         </button>
@@ -28,7 +28,7 @@ function RestaurantDetail({
             {selectedRestaurant.placeName}
           </h2>
           <button
-            className="flex-none flex items-center justify-center w-10 h-10 rounded-lg bg-white shadow-md hover:bg-gray-100 active:scale-95 transition"
+            className="flex-none flex items-center justify-center w-10 h-10 rounded-lg bg-white shadow-md cursor-pointer hover:bg-gray-100 active:scale-95 transition"
             onClick={handleBookmark}
           >
             <Star
@@ -73,7 +73,7 @@ function RestaurantDetail({
             <button
               onClick={handleReviewSubmit}
               disabled={isSubmittingReview}
-              className="rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50"
+              className="rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white cursor-pointer transition hover:bg-gray-800 disabled:opacity-50"
             >
               리뷰 작성
             </button>
