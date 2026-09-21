@@ -3,9 +3,39 @@ import api from '../api/axios';
 
 import MuckziSwal from '../utils/swal';
 
+import PasswordChangeModal from '../components/PasswordChangeModal';
+
 function MyPage() {
 
   const [user, setUser] = useState(null);
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState('');
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  const handleUpdateNickname = async () => {
+    if(!nicknameInput.trim()){
+      MuckziSwal.fire({
+        text: "닉네임을 입력해주세요."
+      });
+      return;
+    }
+
+    try {
+      await api.patch("/api/users/me/nickname", {nickname: nicknameInput});
+
+      setUser({...user, nickname: nicknameInput});
+      setIsEditingNickname(false);
+
+      MuckziSwal.fire({
+        text: "닉네임이 변경되었습니다."
+      })
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({
+        text: error.response?.data?.message || "닉네임 변경에 실패했습니다."
+      })
+    }
+  }
 
   useEffect(() => {
 
@@ -107,9 +137,43 @@ function MyPage() {
                 닉네임
               </span>
 
-              <span className="text-sm font-medium text-gray-900">
-                {user.nickname}
-              </span>
+              {isEditingNickname ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={nicknameInput}
+                    onChange={(e) => setNicknameInput(e.target.value)}
+                    className="rounded-lg border border-gray-300 px-3 py-1 text-sm"
+                  />
+                  <button
+                    onClick={handleUpdateNickname}
+                    className="text-sm font-medium text-blue-600"
+                  >
+                    저장
+                  </button>
+                  <button
+                    onClick={() => setIsEditingNickname(false)}
+                    className="text-sm text-gray-400"
+                  >
+                    취소
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-900">
+                    {user.nickname}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setNicknameInput(user.nickname);
+                      setIsEditingNickname(true);
+                    }}
+                    className="text-xs text-gray-400 underline"
+                  >
+                    수정
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-between px-6 py-5">
@@ -132,11 +196,31 @@ function MyPage() {
               </span>
             </div>
 
+            <div className="flex items-center justify-between px-6 py-5">
+              <span className="text-sm text-gray-500">
+                비밀번호
+              </span>
+
+              <button
+                onClick={() => setShowPasswordModal(true)}
+                className="text-xs text-gray-400 underline"
+              >
+                변경
+              </button>
+            </div>
+
           </div>
 
         </div>
 
       </div>
+
+      {showPasswordModal && (
+        <PasswordChangeModal
+          onClose={() => setShowPasswordModal(false)}
+          onSuccess={() => setShowPasswordModal(false)}
+        />
+      )}
 
     </div>
   );
