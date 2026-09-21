@@ -36,7 +36,9 @@ function LoginPage() {
       );
 
       const accessToken = response.data.accessToken;
+      const refreshToken = response.data.refreshToken;
       localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
 
       toast.success("로그인에 성공했습니다.");
       navigate("/");
