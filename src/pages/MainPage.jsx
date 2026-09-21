@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import KakaoMap from "../components/KakaoMap";
 import api from "../api/axios";
@@ -38,6 +39,9 @@ function MainPage() {
 
   // 북마크 여부
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // 음식점 카테고리 목록
   const categories = [
@@ -454,6 +458,38 @@ function MainPage() {
 
     getMe();
   });
+
+  // 리뷰선택
+  useEffect(() => {
+
+    const placeId = location.state?.placeId;
+
+    if (!placeId) {
+      return;
+    }
+
+    const getPlace = async () => {
+      try {
+
+        const response = await api.get(`/api/places/${placeId}`);
+        setSelectedRestaurant(response.data);
+
+      } catch (error) {
+
+        console.error(error);
+        MuckziSwal.fire({
+          text: "음식점 정보를 불러오지 못했습니다.",
+        });
+
+      } finally {
+        // state를 한 번 쓰고 지워서, 뒤로가기/새로고침 시 재실행 방지
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    };
+
+    getPlace();
+
+  }, [location.state]);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">

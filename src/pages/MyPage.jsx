@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 import MuckziSwal from '../utils/swal';
@@ -11,6 +12,10 @@ function MyPage() {
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('review'); // 'review' | 'bookmark'
+  const [myReviews, setMyReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleUpdateNickname = async () => {
     if(!nicknameInput.trim()){
@@ -61,6 +66,33 @@ function MyPage() {
     getMyInfo();
 
   }, []);
+
+  useEffect(() => {
+    if(activeTab !== "review") return;
+
+    const getMyReviews = async () => {
+      setReviewsLoading(true);
+
+      try {
+        const response = await api.get("/api/places/reviews/me");
+        setMyReviews(response.data);
+      } catch (error) {
+        console.error(error);
+        MuckziSwal.fire({
+          text: "리뷰목록을 불러오지 못했습니다."
+        });
+      } finally {
+        setReviewsLoading(false);
+      }
+    }
+
+    getMyReviews();
+  }, [activeTab]);
+
+  // 리뷰 클릭
+  const handleReviewClick = (placeId) => {
+    navigate('/', { state: { placeId } });
+  };
 
   if (!user) {
     return (
@@ -210,6 +242,76 @@ function MyPage() {
             </div>
 
           </div>
+
+        </div>
+
+
+        {/* 탭 */}
+        <div className="mt-6 flex gap-2 border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab('review')}
+            className={`px-4 py-3 text-sm font-medium ${
+              activeTab === 'review'
+                ? 'border-b-2 border-gray-900 text-gray-900'
+                : 'text-gray-400'
+            }`}
+          >
+            내 리뷰
+          </button>
+          <button
+            onClick={() => setActiveTab('bookmark')}
+            className={`px-4 py-3 text-sm font-medium ${
+              activeTab === 'bookmark'
+                ? 'border-b-2 border-gray-900 text-gray-900'
+                : 'text-gray-400'
+            }`}
+          >
+            북마크
+          </button>
+        </div>
+
+        {/* 탭 내용 */}
+        <div className="mt-4">
+
+          {activeTab === 'review' && (
+            reviewsLoading ? (
+              <p className="py-10 text-center text-sm text-gray-400">
+                불러오는 중...
+              </p>
+            ) : myReviews.length === 0 ? (
+              <p className="py-10 text-center text-sm text-gray-400">
+                작성한 리뷰가 없습니다.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {myReviews.map((review) => (
+                  <div
+                    key={review.reviewId}
+                    onClick={() => handleReviewClick(review.placeId)}
+                    className="rounded-2xl bg-white p-5 shadow-sm cursor-pointer"
+                  >
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-gray-900">
+                        {review.placeName}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {review.createdAt.slice(0, 10)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {review.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+
+          {activeTab === 'bookmark' && (
+            <p className="py-10 text-center text-sm text-gray-400">
+              북마크 기능은 준비 중입니다.
+            </p>
+          )}
 
         </div>
 
