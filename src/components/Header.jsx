@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 function Header() {
 
@@ -7,7 +8,15 @@ function Header() {
   const accessToken = localStorage.getItem('accessToken');
   const isLoggedIn = !!accessToken;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+
+    try {
+      await api.post("/api/auth/logout");
+    } catch (error) {
+      console.error(error);
+      // 서버 호출이 실패해도 클라이언트 로그아웃은 진행
+    }
+
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     navigate("/");
