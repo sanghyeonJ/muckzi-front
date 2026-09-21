@@ -33,6 +33,9 @@ function MainPage() {
   // 리뷰 등록 진행 여부
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
+  // 현재 로그인한 사용자의 userId (내 리뷰 판단용)
+  const [currentUserId, setCurrentUserId] = useState(null);
+
   // 북마크 여부
   const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -253,6 +256,94 @@ function MainPage() {
     }
   };
 
+  // 리뷰 수정
+  const handleReviewUpdate = async (review) => {
+    const result = await MuckziSwal.fire({
+      input: "textarea",
+      inputValue: review.content,
+      inputPlaceholder: "리뷰내용을 입력해주세요.",
+      inputAttributes: {
+        maxlength: 1000,
+        "aria-label": "리뷰 내용"
+      },
+      showCancelButton: true,
+      confirmButtonText: "수정",
+      cancelButtonText: "취소",
+      inputValidator: (value) => {
+        if (!value.trim()) {
+          return "리뷰 내용을 입력해주세요.";
+        }
+      },
+    });
+
+    if(!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      await api.put(`/api/places/reviews/${review.reviewId}`, {
+        placeName: selectedRestaurant.placeName,
+        category: selectedRestaurant.category,
+        filterCategory: selectedRestaurant.filterCategory,
+        address: selectedRestaurant.address,
+        latitude: selectedRestaurant.latitude,
+        longitude: selectedRestaurant.longitude,
+        content: result.value,
+      });
+
+      // 수정된 리뷰 목록 다시 조회
+      const response = await api.get(
+        `/api/places/${selectedRestaurant.placeId}/reviews`
+      );
+      setReviews(response.data);
+
+      MuckziSwal.fire({
+        text: "리뷰가 수정되었습니다.",
+      });
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({
+        text:
+          error.response?.data?.message ||
+          "리뷰 수정에 실패했습니다.",
+      });
+    }
+  };
+
+  // 리뷰 삭제
+  const handleReviewDelete = async (review) => {
+    const result = await MuckziSwal.fire({
+      text: "리뷰를 삭제하시겠습니까?",
+      showCancelButton: true,
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      await api.delete(`/api/places/reviews/${review.reviewId}`);
+
+      // 목록에서 바로 제거
+      setReviews((prev) =>
+        prev.filter((r) => r.reviewId !== review.reviewId)
+      );
+
+      MuckziSwal.fire({
+        text: "리뷰가 삭제되었습니다.",
+      });
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({
+        text:
+          error.response?.data?.message ||
+          "리뷰 삭제에 실패했습니다.",
+      });
+    }
+  };
+
   // 북마크 여부 조회
   useEffect(() => {
     if (!selectedRestaurant) {
@@ -341,6 +432,28 @@ function MainPage() {
       });
     }
   }
+
+  // 현재 사용자 정보 조회
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if(!accessToken) {
+      setCurrentUserId(null);
+      return;
+    }
+
+    const getMe = async () => {
+      try {
+        const response = await api.get("/api/users/me");
+        setCurrentUserId(response.data.userId);
+      } catch (error) {
+        console.error(error);
+        setCurrentUserId(null);
+      }
+    }
+
+    getMe();
+  });
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">
@@ -543,6 +656,9 @@ function MainPage() {
               setSelectedRestaurant={setSelectedRestaurant}
               isBookmarked={isBookmarked}
               handleBookmark={handleBookmark}
+              currentUserId={currentUserId}
+              handleReviewUpdate={handleReviewUpdate}
+              handleReviewDelete={handleReviewDelete}
             />
           )}
         </aside>

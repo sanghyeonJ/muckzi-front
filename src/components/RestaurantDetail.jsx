@@ -7,7 +7,10 @@ function RestaurantDetail({
   isSubmittingReview,
   setSelectedRestaurant,
   isBookmarked,
-  handleBookmark
+  handleBookmark,
+  currentUserId,
+  handleReviewUpdate,
+  handleReviewDelete
 }){
   return (
     <div className="h-full">
@@ -111,6 +114,25 @@ function RestaurantDetail({
                   <p className="whitespace-pre-line text-sm leading-6 text-gray-700">
                     {review.content}
                   </p>
+
+                  {/* 본인이 쓴 리뷰일 때만 수정/삭제 버튼 표시 */}
+                  {review.userId === currentUserId && (
+                    <div className="mt-2 flex gap-3 justify-end">
+                      <button
+                        onClick={() => handleReviewUpdate(review)}
+                        className="text-xs text-gray-500 cursor-pointer hover:text-gray-900"
+                      >
+                        수정
+                      </button>
+
+                      <button
+                        onClick={() => handleReviewDelete(review)}
+                        className="text-xs text-gray-500 cursor-pointer hover:text-red-600"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
