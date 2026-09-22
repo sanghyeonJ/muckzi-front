@@ -15,6 +15,8 @@ function MyPage() {
   const [activeTab, setActiveTab] = useState('review'); // 'review' | 'bookmark'
   const [myReviews, setMyReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [myBookmarks, setMyBookmarks] = useState([]);
+  const [bookmarksLoading, setBookmarksLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleUpdateNickname = async () => {
@@ -91,6 +93,32 @@ function MyPage() {
 
   // 리뷰 클릭
   const handleReviewClick = (placeId) => {
+    navigate('/', { state: { placeId } });
+  };
+
+  useEffect(() => {
+    if (activeTab != 'bookmark') return;
+
+    const getMyBookmarks = async () => {
+      setBookmarksLoading(true);
+
+      try {
+        const response = await api.get("/api/places/bookmarks/me");
+        setMyBookmarks(response.data);
+      } catch (error) {
+        console.error(error);
+        MuckziSwal.fire({
+          text: "북마크 목록을 불러오지 못했습니다."
+        });
+      } finally {
+        setBookmarksLoading(false);
+      }
+    }
+
+    getMyBookmarks();
+  }, [activeTab]);
+
+  const handleBookmarkClick = (placeId) => {
     navigate('/', { state: { placeId } });
   };
 
@@ -308,9 +336,40 @@ function MyPage() {
           )}
 
           {activeTab === 'bookmark' && (
-            <p className="py-10 text-center text-sm text-gray-400">
-              북마크 기능은 준비 중입니다.
-            </p>
+            bookmarksLoading ? (
+              <p className="py-10 text-center text-sm text-gray-400">
+                불러오는 중...
+              </p>
+            ) : myBookmarks.length === 0 ? (
+              <p className="py-10 text-center text-sm text-gray-400">
+                북마크한 음식점이 없습니다.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {myBookmarks.map((bookmark) => (
+                  <div
+                    key={bookmark.bookmarkId}
+                    onClick={() => handleBookmarkClick(bookmark.placeId)}
+                    className="cursor-pointer rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
+                  >
+                    <div className="mb-1 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-gray-900">
+                        {bookmark.placeName}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {bookmark.createdAt.slice(0, 10)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      {bookmark.filterCategory}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {bookmark.address}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )
           )}
 
         </div>
