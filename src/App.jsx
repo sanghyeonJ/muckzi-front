@@ -6,6 +6,9 @@ import MainPage from "./pages/MainPage";
 import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
 import MyPage from "./pages/MyPage";
+import PostListPage from "./pages/PostListPage";
+import PostDetailPage from "./pages/PostDetailPage";
+import PostWritePage from "./pages/PostWritePage";
 
 import { Toaster } from "sonner";
 
@@ -23,6 +26,16 @@ function App() {
           element={
             <PrivateRoute>
               <MyPage />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/posts" element={<PostListPage />} />
+        <Route path="/posts/:postId" element={<PostDetailPage />} />
+        <Route 
+          path="posts/write"
+          element={
+            <PrivateRoute>
+              <PostWritePage />
             </PrivateRoute>
           }
         />

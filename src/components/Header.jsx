@@ -33,6 +33,7 @@ function Header() {
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
+          <Link to="/posts" className="text-gray-700 hover:text-gray-900">게시판</Link>
           {isLoggedIn ? (
             <>
               <Link
