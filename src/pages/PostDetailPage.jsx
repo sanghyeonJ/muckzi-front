@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
+import { toast } from "sonner";
 
 function PostDetailPage() {
 
@@ -53,6 +54,27 @@ function PostDetailPage() {
   // 음식점 링크 클릭
   const handlePlaceClick = (placeId) => {
     navigate('/', { state: { placeId } });
+  }
+
+  const handleDelete = async () => {
+    const result = await MuckziSwal.fire({
+      text: "게시글을 삭제하시겠습니까?",
+      showCancelButton: true,
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소"
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`/api/posts/${postId}`);
+      toast.success("게시글이 삭제되었습니다.");
+      navigate("/posts");
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({
+        text: error.response?.data?.message || "게시글 삭제에 실패했습니다."
+      });
+    }
   }
 
   if (!post) {
@@ -135,11 +157,13 @@ function PostDetailPage() {
           {post.userId === currentUserId && (
             <div className="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-5">
               <button
+                onClick={() => navigate(`/posts/${postId}/edit`)}
                 className="text-sm text-gray-500 hover:text-gray-900"
               >
                 수정
               </button>
               <button
+                onClick={handleDelete}
                 className="text-sm text-gray-500 hover:text-red-600"
               >
                 삭제

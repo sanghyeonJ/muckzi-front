@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRef, useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/axios';
 import MuckziSwal from '../utils/swal';
 
@@ -16,6 +16,31 @@ function PostWritePage() {
   const [images, setImages] = useState([]);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [showPlaceModal, setShowPlaceModal] = useState(false);
+
+  const { postId } = useParams();
+  const [existingImages, setExistingImages] = useState([]);
+  const [existingPlaces, setExistingPlaces] = useState([]);
+  const isEditMode = !!postId;
+
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    const getPostDetail = async () => {
+      try {
+        const response = await api.get(`/api/posts/${postId}`);
+        setTitle(response.data.title);
+        setContent(response.data.content);
+        setExistingImages(response.data.images);
+        setExistingPlaces(response.data.places);
+      } catch (error) {
+        console.error(error);
+        MuckziSwal.fire({ text: "게시글 정보를 불러오지 못했습니다." });
+        navigate("/posts");
+      }
+    };
+
+    getPostDetail();
+  }, [postId]);
 
   const handleSubmit = async (e) => {
 
@@ -35,8 +60,15 @@ function PostWritePage() {
 
       setIsSubmitting(true);
 
-      const response = await api.post("/api/posts", { title, content });
-      const postId = response.data.postId;
+      let currentPostId;
+
+      if (isEditMode) {
+        await api.put(`/api/posts/${postId}`, {title, content});
+        currentPostId = postId;
+      } else {
+        const response = await api.post("/api/posts", { title, content });
+        currentPostId = response.data.postId;
+      }
 
       if(images.length > 0) {
         const formData = new FormData();
@@ -47,13 +79,13 @@ function PostWritePage() {
         await api.post(`/api/posts/${postId}/images`, formData)
       }
 
-      if (selectedPlaces > 0) {
+      if (selectedPlaces.length > 0) {
         await api.post(`/api/posts/${postId}/places`, {
           places: selectedPlaces
         })
       }
 
-      MuckziSwal.fire({ text: "게시글이 등록되었습니다." });
+      MuckziSwal.fire({ text: isEditMode ? "게시글이 수정되었습니다." : "게시글이 등록되었습니다." });
       navigate(`/posts/${postId}`);
 
     } catch (error) {
@@ -78,11 +110,35 @@ function PostWritePage() {
     setImages((prev) => prev.filter((_, i) => i !== index));
   }
 
+  const handleExistingImageRemove = async (postImageId) => {
+    try {
+      await api.delete(`/api/posts/${postId}/images/${postImageId}`);
+      setExistingImages((prev) => 
+        prev.filter((image) => image.postImageId != postImageId)
+      )
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({ text: error.response?.data?.message || "이미지 삭제에 실패했습니다ㅏ." });
+    }
+  }
+
   const handlePlaceConfirm = (places) => {
     setSelectedPlaces((prev) => [...prev, ...places]);
   }
   const handlePlaceRemove = (index) => {
     setSelectedPlaces((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  const handleExistingPlaceRemove = async () => {
+    try {
+      await api.delete(`/api/posts/${postId}/places/${postPlaceLinkId}`);
+      setExistingPlaces((prev) => 
+        prev.filter((place) => place.postPlaceLinkId != postPlaceLinkId)
+      );
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({ text: error.response?.error?.message || "음식점 링크 삭제에 실패했습니다." });
+    }
   }
 
   return (
@@ -91,7 +147,7 @@ function PostWritePage() {
       <div className="mx-auto w-full max-w-3xl">
 
         <h1 className="mb-6 text-2xl font-bold text-gray-900">
-          글쓰기
+          {isEditMode ? "게시글 수정" : "글쓰기"}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl bg-white p-6 shadow-sm">
@@ -144,8 +200,26 @@ function PostWritePage() {
               이미지 선택
             </button>
 
-            {images.length > 0 && (
+            {(existingImages.length > 0 || images.length) > 0 && (
               <div className="mt-3 flex flex-wrap gap-3">
+                {/** 기존 이미지 (수정모드) */}
+                {existingImages.map((image) => (
+                  <div key={`existing-${image.postImageId}`} className='relative'>
+                    <img
+                      src={`http://localhost:8080${image.imageUrl}`}
+                      alt=""
+                      className="h-24 w-24 rounded-xl object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleExistingImageRemove(image.postImageId)}
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-xs text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+
                 {images.map((image, index) => (
                   <div key={index} className="relative">
                     <img
@@ -180,8 +254,25 @@ function PostWritePage() {
               </button>
             </div>
 
-            {selectedPlaces.length > 0 && (
+            {(existingPlaces.length > 0 || selectedPlaces.length > 0) && (
               <div className="flex flex-wrap gap-2">
+                {/* 기존 음식점 링크 (수정) */}
+                {existingPlaces.map((place) => (
+                  <span
+                    key={`existing-${place.postPlaceLinkId}`}
+                    className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700"
+                  >
+                    📍 {place.placeName}
+                    <button
+                      type="button"
+                      onClick={() => handleExistingPlaceRemove(place.postPlaceLinkId)}
+                      className="text-gray-400 hover:text-gray-900"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+
                 {selectedPlaces.map((place, index) => (
                   <span
                     key={index}
@@ -205,7 +296,7 @@ function PostWritePage() {
             <PlaceSearchModal
               onClose={() => setShowPlaceModal(false)}
               onConfirm={handlePlaceConfirm}
-              alreadySelected={selectedPlaces}
+              alreadySelected={[...existingPlaces, ...selectedPlaces]}
             />
           )}
 
@@ -222,7 +313,7 @@ function PostWritePage() {
               disabled={isSubmitting}
               className="rounded-lg bg-black px-5 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50"
             >
-              등록
+              {isEditMode ? "수정" : "등록"}
             </button>
           </div>
 

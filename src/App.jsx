@@ -39,6 +39,14 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route 
+          path="/posts/:postId/edit"
+          element={
+            <PrivateRoute>
+              <PostWritePage />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
