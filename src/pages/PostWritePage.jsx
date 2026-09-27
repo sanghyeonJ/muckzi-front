@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import MuckziSwal from '../utils/swal';
 
+import PlaceSearchModal from '../components/PlaceSearchModal';
+
 function PostWritePage() {
 
   const navigate = useNavigate();
@@ -12,6 +14,8 @@ function PostWritePage() {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState([]);
+  const [selectedPlaces, setSelectedPlaces] = useState([]);
+  const [showPlaceModal, setShowPlaceModal] = useState(false);
 
   const handleSubmit = async (e) => {
 
@@ -43,6 +47,12 @@ function PostWritePage() {
         await api.post(`/api/posts/${postId}/images`, formData)
       }
 
+      if (selectedPlaces > 0) {
+        await api.post(`/api/posts/${postId}/places`, {
+          places: selectedPlaces
+        })
+      }
+
       MuckziSwal.fire({ text: "게시글이 등록되었습니다." });
       navigate(`/posts/${postId}`);
 
@@ -66,6 +76,13 @@ function PostWritePage() {
 
   const handleImageRemove = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  const handlePlaceConfirm = (places) => {
+    setSelectedPlaces((prev) => [...prev, ...places]);
+  }
+  const handlePlaceRemove = (index) => {
+    setSelectedPlaces((prev) => prev.filter((_, i) => i !== index));
   }
 
   return (
@@ -148,6 +165,49 @@ function PostWritePage() {
               </div>
             )}
           </div>
+
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700">
+                음식점 링크
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPlaceModal(true)}
+                className="text-sm text-gray-500 underline"
+              >
+                음식점 링크 연결
+              </button>
+            </div>
+
+            {selectedPlaces.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {selectedPlaces.map((place, index) => (
+                  <span
+                    key={index}
+                    className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700"
+                  >
+                    📍 {place.placeName}
+                    <button
+                      type="button"
+                      onClick={() => handlePlaceRemove(index)}
+                      className="text-gray-400 hover:text-gray-900"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {showPlaceModal && (
+            <PlaceSearchModal
+              onClose={() => setShowPlaceModal(false)}
+              onConfirm={handlePlaceConfirm}
+              alreadySelected={selectedPlaces}
+            />
+          )}
 
           <div className="flex justify-end gap-2">
             <button
