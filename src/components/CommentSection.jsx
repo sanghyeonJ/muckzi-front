@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
+import { toast } from "sonner";
 
 function CommentSection ({ postId, currentUserId }) {
 
@@ -8,9 +9,15 @@ function CommentSection ({ postId, currentUserId }) {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 답글 입력창이 열린 댓글
   const [replyTargetId, setReplyTargetId] = useState(null);
   const [replyContent, setReplyContent] = useState("");
 
+  // 수정중인 댓글
+  const [editTargetId, setEditTargetId] = useState(null);
+  const [editContent, setEditContent] = useState("");
+
+  // 댓글 목록 조회
   const getComments = async () => {
     try {
       const response = await api.get(`/api/posts/${postId}/comments`);
@@ -24,6 +31,7 @@ function CommentSection ({ postId, currentUserId }) {
     getComments();
   }, [postId]);
 
+  // 댓글 수
   const totalCount = comments.reduce(
     (sum, comment) => sum + 1 + comment.replies.length, 0
   );
@@ -54,6 +62,7 @@ function CommentSection ({ postId, currentUserId }) {
     }
   }
 
+  // 답글 버튼
   const handleReplyToggle = (commentId) => {
     if (!currentUserId) {
       MuckziSwal.fire({ text: "로그인이 필요합니다." });
@@ -94,6 +103,135 @@ function CommentSection ({ postId, currentUserId }) {
     }
   }
 
+  // 수정
+  const handleEditStart = (item) => {
+    setEditTargetId(item.commentId);
+    setEditContent(item.content);
+    setReplyTargetId(null);
+  }
+  const handleEditCancel = () => {
+    setEditTargetId(null);
+    setEditContent("");
+  }
+
+  // 수정 저장
+  const handleEditSubmit = async (e, commentId) => {
+    e.preventDefault();
+
+    if (!editContent.trim()) {
+      MuckziSwal.fire({ text: "내용을 입력해주세요." });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await api.put(`/api/comments/${commentId}`, { content: editContent });
+      handleEditCancel();
+      getComments();
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({ text: error.response?.data?.message || "댓글 수정에 실패했습니다." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  // 삭제
+  const handleDelete = async (commentId) => {
+    const result = await MuckziSwal.fire({
+      text: "댓글을 삭제하시겠습니까?",
+      showCancelButton: true,
+      confirmButtonText: "확인",
+      cancelButtonText: "취소"
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`/api/comments/${commentId}`);
+      toast.success("댓글이 삭제되었습니다.");
+      getComments();
+    } catch (error) {
+      console.error(error);
+      MuckziSwal.fire({ text: error.response?.data?.message || "댓글 삭제에 실패했습니다." });
+    }
+  }
+
+  // 댓글/답글 한 개 그리기 (isReply가 true면 답글)
+  const renderItem = (item, isReply) => {
+    const isMine = item.userId === currentUserId;
+    const isEditing = editTargetId === item.commentId;
+
+    return (
+      <div>
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <span className="font-semibold text-gray-900">{item.nickname}</span>
+          <span>{item.createdAt.slice(0, 10)}</span>
+        </div>
+
+        {isEditing ? (
+          // 수정 모드: 내용 자리에 입력창
+          <form onSubmit={(e) => handleEditSubmit(e, item.commentId)} className="mt-2">
+            <textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              rows={2}
+              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+            />
+            <div className="mt-2 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleEditCancel}
+                className="rounded-lg px-4 py-2 text-sm text-gray-500"
+              >
+                취소
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50"
+              >
+                저장
+              </button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <p className="mt-1 whitespace-pre-line text-sm text-gray-700">
+              {item.content}
+            </p>
+
+            <div className="mt-2 flex gap-3 text-xs text-gray-500">
+              {!isReply && (
+                <button
+                  onClick={() => handleReplyToggle(item.commentId)}
+                  className="hover:text-gray-900"
+                >
+                  {replyTargetId === item.commentId ? "답글 취소" : "답글"}
+                </button>
+              )}
+              {isMine && (
+                <>
+                  <button
+                    onClick={() => handleEditStart(item)}
+                    className="hover:text-gray-900"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item.commentId)}
+                    className="hover:text-red-600"
+                  >
+                    삭제
+                  </button>
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
       <h3 className="mb-4 text-sm font-semibold text-gray-900">
@@ -130,19 +268,7 @@ function CommentSection ({ postId, currentUserId }) {
               {comment.deleted ? (
                 <p className="text-sm text-gray-400">{comment.content}</p>
               ) : (
-                <div>
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <span className="font-semibold text-gray-900">{comment.nickname}</span>
-                    <span>{comment.createdAt.slice(0,10)}</span>
-                  </div>
-                  <p className="mt-1 whitespace-pre-line text-sm text-gray-700">{comment.content}</p>
-                  <button
-                    onClick={() => handleReplyToggle(comment.commentId)}
-                    className="mt-2 text-xs text-gray-500 hover:text-gray-900"
-                  >
-                    {replyTargetId === comment.commentId ? "답글 취소" : "답글"}
-                  </button>
-                </div>
+                renderItem(comment, false)
               )}
 
               {/** 답글 */}
@@ -150,13 +276,7 @@ function CommentSection ({ postId, currentUserId }) {
                 <div className="mt-3 space-y-3 border-l-2 border-gray-100 pl-4">
                   {comment.replies.map((reply) => (
                     <div key={reply.commentId}>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <span className="font-semibold text-gray-900">{reply.nickname}</span>
-                        <span>{reply.createdAt.slice(0, 10)}</span>
-                      </div>
-                      <p className="mt-1 whitespace-pre-line text-sm text-gray-700">
-                        {reply.content}
-                      </p>
+                      {renderItem(reply, true)}
                     </div>
                   ))}
                 </div>
