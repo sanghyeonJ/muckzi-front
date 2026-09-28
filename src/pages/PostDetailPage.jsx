@@ -4,6 +4,8 @@ import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 import { toast } from "sonner";
 
+import CommentSection from "../components/CommentSection";
+
 function PostDetailPage() {
 
   const { postId } = useParams();
@@ -172,6 +174,11 @@ function PostDetailPage() {
           )}
 
         </div>
+
+        <CommentSection
+          postId={postId}
+          currentUserId={currentUserId}
+        />
 
       </div>
 
