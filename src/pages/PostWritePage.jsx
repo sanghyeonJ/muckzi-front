@@ -76,17 +76,17 @@ function PostWritePage() {
           formData.append("files", image);
         });
 
-        await api.post(`/api/posts/${postId}/images`, formData)
+        await api.post(`/api/posts/${currentPostId}/images`, formData)
       }
 
       if (selectedPlaces.length > 0) {
-        await api.post(`/api/posts/${postId}/places`, {
+        await api.post(`/api/posts/${currentPostId}/places`, {
           places: selectedPlaces
         })
       }
 
       MuckziSwal.fire({ text: isEditMode ? "게시글이 수정되었습니다." : "게시글이 등록되었습니다." });
-      navigate(`/posts/${postId}`);
+      navigate(`/posts/${currentPostId}`);
 
     } catch (error) {
 
@@ -118,7 +118,7 @@ function PostWritePage() {
       )
     } catch (error) {
       console.error(error);
-      MuckziSwal.fire({ text: error.response?.data?.message || "이미지 삭제에 실패했습니다ㅏ." });
+      MuckziSwal.fire({ text: error.response?.data?.message || "이미지 삭제에 실패했습니다." });
     }
   }
 
@@ -129,7 +129,7 @@ function PostWritePage() {
     setSelectedPlaces((prev) => prev.filter((_, i) => i !== index));
   }
 
-  const handleExistingPlaceRemove = async () => {
+  const handleExistingPlaceRemove = async (postPlaceLinkId) => {
     try {
       await api.delete(`/api/posts/${postId}/places/${postPlaceLinkId}`);
       setExistingPlaces((prev) => 
@@ -137,7 +137,7 @@ function PostWritePage() {
       );
     } catch (error) {
       console.error(error);
-      MuckziSwal.fire({ text: error.response?.error?.message || "음식점 링크 삭제에 실패했습니다." });
+      MuckziSwal.fire({ text: error.response?.data?.message || "음식점 링크 삭제에 실패했습니다." });
     }
   }
 
@@ -200,7 +200,7 @@ function PostWritePage() {
               이미지 선택
             </button>
 
-            {(existingImages.length > 0 || images.length) > 0 && (
+            {(existingImages.length > 0 || images.length > 0) && (
               <div className="mt-3 flex flex-wrap gap-3">
                 {/** 기존 이미지 (수정모드) */}
                 {existingImages.map((image) => (
