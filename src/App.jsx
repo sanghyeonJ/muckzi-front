@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
+import AdminRoute from "./components/AdminRoute";
 
 import MainPage from "./pages/MainPage";
 import SignupPage from "./pages/SignupPage";
@@ -45,6 +46,15 @@ function App() {
             <PrivateRoute>
               <PostWritePage />
             </PrivateRoute>
+          }
+        />
+
+        <Route 
+          path="/admin"
+          element={
+            <AdminRoute>
+              <div className="p-10">관리자 페이지 테스트</div>
+            </AdminRoute>
           }
         />
       </Routes>
