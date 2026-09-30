@@ -1,12 +1,34 @@
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { useEffect, useState } from 'react';
 
 function Header() {
 
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const isLoggedIn = !!accessToken;
+
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!accessToken) {
+      setIsAdmin(false);
+      return;
+    }
+
+    const checkRole = async () => {
+      try {
+        const response = await api.get("/api/users/me");
+        setIsAdmin(response.data.role === "ADMIN");
+      } catch (error) {
+        console.error(error);
+        setIsAdmin(false);
+      }
+    }
+
+    checkRole();
+  }, [accessToken]);
 
   const handleLogout = async () => {
 
@@ -34,8 +56,17 @@ function Header() {
 
         <nav className="flex items-center gap-4 text-sm">
           <Link to="/posts" className="text-gray-700 hover:text-gray-900">게시판</Link>
+          <span className="h-4 w-px bg-gray-200" />
           {isLoggedIn ? (
             <>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className='font-semibold text-gray-900 hover:underline'
+                >
+                  관리자
+                </Link>
+              )}
               <Link
                 to="/mypage"
                 className="text-gray-700 hover:text-gray-900"
