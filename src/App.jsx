@@ -11,7 +11,10 @@ import PostListPage from "./pages/PostListPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostWritePage from "./pages/PostWritePage";
 
+import AdminUserPage from "./pages/admin/AdminUserPage";
+
 import { Toaster } from "sonner";
+import AdminLayout from "./components/AdminLayout";
 
 function App() {
   return (
@@ -53,10 +56,16 @@ function App() {
           path="/admin"
           element={
             <AdminRoute>
-              <div className="p-10">관리자 페이지 테스트</div>
+              <AdminLayout />
             </AdminRoute>
           }
-        />
+        >
+          <Route index element={<div>대시보드</div>} />
+          <Route path="user" element={<AdminUserPage />} />
+          <Route path="posts" element={<div>게시글 관리</div>} />
+          <Route path="comments" element={<div>댓글 관리</div>} />
+          <Route path="reviews" element={<div>리뷰 관리</div>} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
