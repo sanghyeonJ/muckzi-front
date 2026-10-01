@@ -10,6 +10,7 @@ import MyPage from "./pages/MyPage";
 import PostListPage from "./pages/PostListPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostWritePage from "./pages/PostWritePage";
+import WithdrawPage from "./pages/WithdrawPage";
 
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminUserPage from "./pages/admin/AdminUserPage";
@@ -34,6 +35,14 @@ function App() {
           element={
             <PrivateRoute>
               <MyPage />
+            </PrivateRoute>
+          }
+        />
+        <Route 
+          path="/mypage/withdraw"
+          element={
+            <PrivateRoute>
+              <WithdrawPage />
             </PrivateRoute>
           }
         />

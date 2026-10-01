@@ -273,6 +273,18 @@ function MyPage() {
 
         </div>
 
+        {/* 회원 탈퇴 (관리자는 숨김) */}
+        {user.role !== "ADMIN" && (
+          <div className="mt-3 flex justify-end">
+            <button
+              onClick={() => navigate("/mypage/withdraw")}
+              className="text-xs text-gray-400 underline hover:text-red-600"
+            >
+              회원 탈퇴
+            </button>
+          </div>
+        )}
+
 
         {/* 탭 */}
         <div className="mt-6 flex gap-2 border-b border-gray-200">
