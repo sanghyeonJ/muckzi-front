@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import MuckziSwal from "../../utils/swal";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // 최근 활동 패널 공통 틀 (제목 + 전체 보기 + 목록)
 function RecentPanel({ title, to, isEmpty, children }) {
@@ -32,6 +32,13 @@ function AdminDashboardPage () {
   const [recentPosts, setRecentPosts] = useState([]);
   const [recentReviews, setRecentReviews] = useState([]);
   const [loading, setLoading] = useState(null);
+
+  const navigate = useNavigate();
+
+  // 음식점 클릭 → 지도에서 해당 음식점 열기
+  const handlePlaceClick = (placeId) => {
+    navigate("/", { state: { placeId } });
+  };
 
   const getDashboard = async () => {
     setLoading(true);
@@ -137,7 +144,7 @@ function AdminDashboardPage () {
       </div>
 
       {/** 최근 활동 */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/** 가입 */}
         <RecentPanel title="최근 가입 회원" to="/admin/users" isEmpty={recentUsers === 0}>
           {recentUsers.map((user) => (
@@ -192,6 +199,49 @@ function AdminDashboardPage () {
               <span className="shrink-0 text-xs text-gray-400">{review.createdAt?.slice(0, 10)}</span>
             </li>
           ))}
+        </RecentPanel>
+
+        {/** 인기 음식점 TOP 5 */}
+        <RecentPanel
+          title="인기 음식점 TOP 5"
+          to="/admin/reviews"
+          isEmpty={dashboard.popularPlaces.length === 0}
+        >
+          {dashboard.popularPlaces.map((place, index) => {
+            const maxCount = dashboard.popularPlaces[0].reviewCount;
+            const percent = (place.reviewCount / maxCount) * 100;
+
+            return (
+              <li key={place.placeId} className="py-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className={`w-5 shrink-0 text-center text-sm font-bold ${
+                      index === 0 ? "text-gray-900" : "text-gray-400"
+                    }`}>
+                      {index + 1}
+                    </span>
+                    <button
+                      onClick={() => handlePlaceClick(place.placeId)}
+                      className="truncate text-sm text-gray-900 hover:underline"
+                    >
+                      {place.placeName}
+                    </button>
+                  </div>
+                  <span className="shrink-0 text-xs text-gray-500">
+                    리뷰 {place.reviewCount}
+                  </span>
+                </div>
+
+                {/* 리뷰 수 막대 */}
+                <div className="ml-8 mt-2 h-1.5 rounded-full bg-gray-100">
+                  <div
+                    className="h-1.5 rounded-full bg-gray-900"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+              </li>
+            );
+          })}
         </RecentPanel>
       </div>
     </div>
