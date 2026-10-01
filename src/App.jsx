@@ -11,6 +11,7 @@ import PostListPage from "./pages/PostListPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostWritePage from "./pages/PostWritePage";
 
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminUserPage from "./pages/admin/AdminUserPage";
 import AdminPostPage from "./pages/admin/AdminPostPage";
 import AdminCommentPage from "./pages/admin/AdminCommentPage";
@@ -63,8 +64,8 @@ function App() {
             </AdminRoute>
           }
         >
-          <Route index element={<div>대시보드</div>} />
-          <Route path="user" element={<AdminUserPage />} />
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="users" element={<AdminUserPage />} />
           <Route path="posts" element={<AdminPostPage />} />
           <Route path="comments" element={<AdminCommentPage />} />
           <Route path="reviews" element={<AdminReviewPage />} />

@@ -2,7 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 const menu = [
   { to: "/admin", label: "대시보드", end: true },
-  { to: "/admin/user", label: "회원 관리" },
+  { to: "/admin/users", label: "회원 관리" },
   { to: "/admin/posts", label: "게시글 관리" },
   { to: "/admin/comments", label: "댓글 관리" },
   { to: "/admin/reviews", label: "리뷰 관리" }
