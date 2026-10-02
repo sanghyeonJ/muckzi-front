@@ -145,14 +145,23 @@ function AdminCommentPage () {
                     {comment.content}
                   </td>
                   <td className="max-w-[10rem] truncate px-3 py-3">
-                    <Link
-                      to={`/posts/${comment.postId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:underline"
-                    >
-                      {comment.postTitle}
-                    </Link>
+                    {comment.postStatus === "ACTIVE" ? (
+                      <Link
+                        to={`/posts/${comment.postId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:underline"
+                      >
+                        {comment.postTitle}
+                      </Link>
+                    ) : (
+                      <span
+                        className="text-gray-400 line-through"
+                        title="삭제된 게시글"
+                      >
+                        {comment.postTitle}
+                      </span>
+                    )}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3 text-gray-700">
                     {comment.nickname}
