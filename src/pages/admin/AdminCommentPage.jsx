@@ -3,6 +3,7 @@ import api from "../../api/axios";
 import MuckziSwal from "../../utils/swal";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import Pagination from "../../components/Pagination";
 
 // 상태별 표시 이름과 뱃지 색
 const STATUS_LABELS = {
@@ -191,23 +192,14 @@ function AdminCommentPage () {
       )}
 
       {/** 페이지네이션 */}
-      {totalPages > 1 && (
-        <div className="mt-6 flex justify-center gap-2">
-          {Array.from({ length: totalPages }, (_, i) => i).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`h-9 w-9 rounded-lg text-sm ${
-                page === currentPage ?
-                  "bg-black text-white" :
-                  "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              {page + 1}
-            </button>
-          ))}
-        </div>
-      )}
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => {
+          setCurrentPage(page);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
     </div>
   );
 

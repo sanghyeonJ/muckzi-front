@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import MuckziSwal from "../../utils/swal";
 import { toast } from "sonner";
+import Pagination from "../../components/Pagination";
 
 const STATUS_LABELS = {
   ACTIVE: { label: "정상", className: "bg-green-100 text-green-700" },
@@ -180,23 +181,14 @@ function AdminUserPage () {
       )}
 
       {/** 페이지네이션 */}
-      {totalPages > 1 && (
-        <div className="mt-6 flex justify-center gap-2">
-          {Array.from({length: totalPages}, (_, i) => i).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`h-9 w-9 rounded-lg text-sm ${
-                page === currentPage ?
-                  "bg-black text-white" :
-                  "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              {page + 1}
-            </button>
-          ))}
-        </div>
-      )}
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => {
+          setCurrentPage(page);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
     </div>
   );
 
