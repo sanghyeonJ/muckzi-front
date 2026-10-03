@@ -18,6 +18,8 @@ import AdminPostPage from "./pages/admin/AdminPostPage";
 import AdminCommentPage from "./pages/admin/AdminCommentPage";
 import AdminReviewPage from "./pages/admin/AdminReviewPage";
 
+import NotFoundPage from "./pages/NotFoundPage";
+
 import { Toaster } from "sonner";
 import AdminLayout from "./components/AdminLayout";
 
@@ -79,6 +81,8 @@ function App() {
           <Route path="comments" element={<AdminCommentPage />} />
           <Route path="reviews" element={<AdminReviewPage />} />
         </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
