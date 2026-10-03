@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import api from '../api/axios';
 import MuckziSwal from '../utils/swal';
 
@@ -85,7 +86,7 @@ function PostWritePage() {
         })
       }
 
-      MuckziSwal.fire({ text: isEditMode ? "게시글이 수정되었습니다." : "게시글이 등록되었습니다." });
+      toast.success(isEditMode ? "게시글이 수정되었습니다." : "게시글이 등록되었습니다.");
       navigate(`/posts/${currentPostId}`);
 
     } catch (error) {

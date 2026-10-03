@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { toast } from "sonner";
+
 import KakaoMap from "../components/KakaoMap";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
@@ -243,9 +245,7 @@ function MainPage() {
         placeId,
       }));
 
-      MuckziSwal.fire({
-        text: "리뷰가 등록되었습니다.",
-      });
+      toast.success("리뷰가 등록되었습니다.");
     } catch (error) {
       console.error(error);
 
@@ -301,9 +301,7 @@ function MainPage() {
       );
       setReviews(response.data);
 
-      MuckziSwal.fire({
-        text: "리뷰가 수정되었습니다.",
-      });
+      toast.success("리뷰가 수정되었습니다.");
     } catch (error) {
       console.error(error);
       MuckziSwal.fire({
@@ -335,9 +333,7 @@ function MainPage() {
         prev.filter((r) => r.reviewId !== review.reviewId)
       );
 
-      MuckziSwal.fire({
-        text: "리뷰가 삭제되었습니다.",
-      });
+      toast.success("리뷰가 삭제되었습니다.");
     } catch (error) {
       console.error(error);
       MuckziSwal.fire({
@@ -399,9 +395,7 @@ function MainPage() {
         await api.delete(`/api/places/${selectedRestaurant.placeId}/bookmark`);
         setIsBookmarked(false);
 
-        MuckziSwal.fire({
-          text: "북마크가 삭제되었습니다."
-        });
+        toast.success("북마크가 삭제되었습니다.");
         return;
       }
 
@@ -423,9 +417,7 @@ function MainPage() {
       }));
       setIsBookmarked(true);
 
-      MuckziSwal.fire({
-        text: "북마크가 등록되었습니다."
-      });
+      toast.success("북마크가 등록되었습니다.");
     } catch (error) {
       console.error(error);
 

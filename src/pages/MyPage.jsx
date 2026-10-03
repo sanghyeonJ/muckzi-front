@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import api from '../api/axios';
 
 import MuckziSwal from '../utils/swal';
@@ -33,9 +34,7 @@ function MyPage() {
       setUser({...user, nickname: nicknameInput});
       setIsEditingNickname(false);
 
-      MuckziSwal.fire({
-        text: "닉네임이 변경되었습니다."
-      })
+      toast.success("닉네임이 변경되었습니다.")
     } catch (error) {
       console.error(error);
       MuckziSwal.fire({

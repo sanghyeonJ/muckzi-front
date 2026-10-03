@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 
@@ -19,7 +20,7 @@ function PasswordChangeModal({ onClose, onSuccess }) {
         newPassword
       });
 
-      MuckziSwal.fire({ text: "비밀번호가 변경되었습니다." });
+      toast.success("비밀번호가 변경되었습니다.");
       onSuccess();
     } catch (error) {
       console.error(error);
