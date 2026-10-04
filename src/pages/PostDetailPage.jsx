@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 import { toast } from "sonner";
+import { getImageUrl } from "../utils/imageUrl";
 
 import CommentSection from "../components/CommentSection";
 
@@ -121,7 +122,7 @@ function PostDetailPage() {
               {post.images.map((image) => (
                 <img
                   key={image.postImageId}
-                  src={`http://localhost:8080${image.imageUrl}`}
+                  src={getImageUrl(image.imageUrl)} 
                   alt=""
                   className="h-48 w-48 shrink-0 rounded-xl object-cover"
                 />

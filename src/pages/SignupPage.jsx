@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 import { toast } from 'sonner';
 import MuckziSwal from '../utils/swal';
@@ -35,8 +35,7 @@ function SignupPage() {
     }
 
     try{
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/signup",
+      await api.post("/api/auth/signup",
         {
           userId,
           password,

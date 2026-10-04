@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import api from '../api/axios';
 import MuckziSwal from '../utils/swal';
+import { getImageUrl } from '../utils/imageUrl';
 
 import PlaceSearchModal from '../components/PlaceSearchModal';
 
@@ -212,7 +213,7 @@ function PostWritePage() {
                 {existingImages.map((image) => (
                   <div key={`existing-${image.postImageId}`} className='relative'>
                     <img
-                      src={`http://localhost:8080${image.imageUrl}`}
+                      src={getImageUrl(image.imageUrl)}
                       alt=""
                       className="h-24 w-24 rounded-xl object-cover"
                     />
