@@ -449,7 +449,7 @@ function MainPage() {
     }
 
     getMe();
-  });
+  }, []);
 
   // 리뷰선택
   useEffect(() => {
