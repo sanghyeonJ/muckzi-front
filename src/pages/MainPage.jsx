@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { toast } from "sonner";
@@ -7,6 +7,9 @@ import KakaoMap from "../components/KakaoMap";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 import RestaurantDetail from "../components/RestaurantDetail";
+
+// 모바일 바텀시트 높이 단계 (지도 영역 대비 %)
+const SHEET_SNAP_POINTS = [15, 50, 90];
 
 function MainPage() {
   // 현재 선택된 음식점 카테고리
@@ -44,6 +47,11 @@ function MainPage() {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  // 모바일 바텀시트 높이 / 드래그 상태
+  const [sheetHeight, setSheetHeight] = useState(50);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef({ startY: 0, startHeight: 0, containerHeight: 0 });
 
   // 음식점 카테고리 목록
   const categories = [
@@ -483,6 +491,65 @@ function MainPage() {
 
   }, [location.state]);
 
+  // 모바일 바텀 시트 //
+  // 가까운 단계 찾기
+  const getNearestSnap = (height) => {
+    return SHEET_SNAP_POINTS.reduce((nearest, point) => 
+      Math.abs(point - height) < Math.abs(nearest - height) ? point : nearest
+    );
+  }
+
+  // 다음단계
+  const goToNextSnap = () => {
+    const currentIndex = SHEET_SNAP_POINTS.indexOf(getNearestSnap(sheetHeight));
+    const nextIndex = (currentIndex + 1) % SHEET_SNAP_POINTS.length;
+    setSheetHeight(SHEET_SNAP_POINTS[nextIndex]);
+  }
+
+  // 누르기 시작
+  const handleSheetPointerDown = (e) => {
+    dragRef.current = {
+      startY: e.clientY,
+      startHeight: sheetHeight,
+      containerHeight: e.currentTarget.closest("aside").parentElement.clientHeight
+    };
+    setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  // 핸들 드래그 중
+  const handleSheetPointerMove = (e) => {
+    if (!isDragging) return;
+
+    const {startY, startHeight, containerHeight} = dragRef.current;
+    const movedPercent = ((startY - e.clientY) / containerHeight) * 100;
+    const nextHeight = Math.min(90, Math.max(15, startHeight + movedPercent));
+
+    setSheetHeight(nextHeight)
+  }
+
+  // 핸들 놓기
+  const handleSheetPointerUp = (e) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    // 거의 안 움직였으면 탭으로 보고 다음 단계로
+    if (Math.abs(dragRef.current.startY - e.clientY) < 5) {
+      goToNextSnap();
+      return;
+    }
+
+    setSheetHeight((prev) => getNearestSnap(prev));
+  }
+
+  // 접힌 상태에서 음식점을 선택하면 중간까지 올리기
+  useEffect(() => {
+    if (selectedRestaurant) {
+      setSheetHeight((prev) => (prev < 50 ? 50 : prev));
+    }
+  }, [selectedRestaurant]);
+
+
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">
 
@@ -545,150 +612,165 @@ function MainPage() {
           />
         </div>
 
-        {/* 음식점 목록 / 상세 영역 */}
+                {/* 음식점 목록 / 상세 영역 */}
         <aside
-          className="
+          style={{ "--sheet-h": `${sheetHeight}%` }}
+          className={`
             absolute
             bottom-0
             left-0
             right-0
             z-20
-            max-h-[45%]
-            overflow-y-auto
+            flex
+            h-[var(--sheet-h)]
+            flex-col
             rounded-t-3xl
             bg-white
             shadow-[0_-4px_20px_rgba(0,0,0,0.12)]
+            ${isDragging ? "" : "transition-[height] duration-300"}
             lg:inset-y-0
             lg:left-0
             lg:right-auto
             lg:bottom-auto
             lg:z-10
             lg:h-full
-            lg:max-h-none
             lg:w-80
-            lg:overflow-y-auto
             lg:rounded-none
             lg:rounded-r-2xl
             lg:border-r
             lg:border-gray-200
             lg:shadow-none
-          "
+            lg:transition-none
+          `}
         >
 
-          {/* 선택된 음식점이 없을 때 → 목록 화면 */}
-          {selectedRestaurant === null ? (
-            <>
-              {/* 네이버 검색 결과 */}
-              {isSearched && (
-                <>
-                {searchResults.length > 0 ? (
-                  <div className="border-b border-gray-200 px-4 pb-4 pt-4 lg:px-5">
-                    <h3 className="mb-3 font-bold text-gray-900">
-                      검색 결과
-                    </h3>
-  
-                    <div className="space-y-2">
-                      {searchResults.map((place) => (
-                      <div
-                        key={place.kakaoPlaceId}
-                        onClick={() => handleSearchResultClick(place)}
-                        className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
-                      >
-                        <h4 className="font-bold text-gray-900">
-                          {place.placeName}
-                        </h4>
-  
-                        <p className="mt-1 text-sm text-gray-500">
-                          {place.filterCategory}
-                        </p>
-  
-                        <p className="mt-1 text-sm text-gray-500">
-                          {place.address}
-                        </p>
-                      </div>
-                    ))}
-                    </div>
-                  </div>
-                ) : (
-                  <p className="py-4 text-center text-sm text-gray-500">
-                    검색 결과가 없습니다.
-                  </p>
-                )}
-                </>
-              )}
+          {/* 모바일 Bottom Sheet 핸들 (드래그 / 탭) */}
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label="목록 크기 조절"
+            onPointerDown={handleSheetPointerDown}
+            onPointerMove={handleSheetPointerMove}
+            onPointerUp={handleSheetPointerUp}
+            onPointerCancel={handleSheetPointerUp}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                goToNextSnap();
+              }
+            }}
+            className="shrink-0 cursor-grab touch-none py-3 active:cursor-grabbing lg:hidden"
+          >
+            <div className="mx-auto h-1.5 w-12 rounded-full bg-gray-300" />
+          </div>
 
-              {/* 목록 헤더 */}
-              <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-3 lg:px-5 lg:py-4 lg:pb-2">
+          {/* 스크롤되는 내용 영역 */}
+          <div className="min-h-0 flex-1 overflow-y-auto">
 
-                {/* 모바일 Bottom Sheet 핸들 */}
-                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-gray-300 lg:hidden" />
-
-                <div className="flex items-center justify-between">
-                  <h2 className="font-bold text-gray-900">
-                    주변 음식점
-                  </h2>
-
-                  <span className="text-sm text-gray-500">
-                    {filteredRestaurants.length}곳
-                  </span>
-                </div>
-              </div>
-
-
-              {/* 현재 지도 영역의 음식점 목록 */}
-              <div className="space-y-3 px-4 pb-5 lg:p-3">
-                {filteredRestaurants.length === 0 ? (
-                  <div className="rounded-xl bg-gray-50 p-5 text-center">
-                    <p className="text-sm text-gray-500">
-                      주변에 음식점이 없습니다.
-                    </p>
-                  </div>
-                ) : (
-                  filteredRestaurants.map((restaurant) => (
-                    <div
-                      key={restaurant.placeId}
-                      onClick={() => setSelectedRestaurant(restaurant)}
-                      className="
-                        cursor-pointer
-                        rounded-xl
-                        bg-gray-50
-                        p-4
-                        transition
-                        hover:shadow-md
-                      "
-                    >
-                      <h3 className="font-bold text-gray-900">
-                        {restaurant.placeName}
+            {/* 선택된 음식점이 없을 때 → 목록 화면 */}
+            {selectedRestaurant === null ? (
+              <>
+                {/* 검색 결과 */}
+                {isSearched && (
+                  <>
+                  {searchResults.length > 0 ? (
+                    <div className="border-b border-gray-200 px-4 pb-4 pt-1 lg:px-5 lg:pt-4">
+                      <h3 className="mb-3 font-bold text-gray-900">
+                        검색 결과
                       </h3>
 
-                      <p className="mt-1 text-sm text-gray-500">
-                        {restaurant.category}
-                      </p>
+                      <div className="space-y-2">
+                        {searchResults.map((place) => (
+                        <div
+                          key={place.kakaoPlaceId}
+                          onClick={() => handleSearchResultClick(place)}
+                          className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
+                        >
+                          <h4 className="font-bold text-gray-900">
+                            {place.placeName}
+                          </h4>
 
-                      <p className="mt-1 text-sm text-gray-500">
-                        {restaurant.address}
+                          <p className="mt-1 text-sm text-gray-500">
+                            {place.filterCategory}
+                          </p>
+
+                          <p className="mt-1 text-sm text-gray-500">
+                            {place.address}
+                          </p>
+                        </div>
+                      ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="py-4 text-center text-sm text-gray-500">
+                      검색 결과가 없습니다.
+                    </p>
+                  )}
+                  </>
+                )}
+
+                {/* 목록 헤더 */}
+                <div className="sticky top-0 z-10 bg-white px-4 pb-3 pt-1 lg:px-5 lg:py-4 lg:pb-2">
+                  <div className="flex items-center justify-between">
+                    <h2 className="font-bold text-gray-900">
+                      주변 음식점
+                    </h2>
+
+                    <span className="text-sm text-gray-500">
+                      {filteredRestaurants.length}곳
+                    </span>
+                  </div>
+                </div>
+
+                {/* 현재 지도 영역의 음식점 목록 */}
+                <div className="space-y-3 px-4 pb-5 lg:p-3">
+                  {filteredRestaurants.length === 0 ? (
+                    <div className="rounded-xl bg-gray-50 p-5 text-center">
+                      <p className="text-sm text-gray-500">
+                        주변에 음식점이 없습니다.
                       </p>
                     </div>
-                  ))
-                )}
-              </div>
-            </>
-          ) : (
+                  ) : (
+                    filteredRestaurants.map((restaurant) => (
+                      <div
+                        key={restaurant.placeId}
+                        onClick={() => setSelectedRestaurant(restaurant)}
+                        className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
+                      >
+                        <h3 className="font-bold text-gray-900">
+                          {restaurant.placeName}
+                        </h3>
 
-            /* 선택된 음식점이 있을 때 → 상세 화면 */
-            <RestaurantDetail
-              selectedRestaurant={selectedRestaurant}
-              reviews={reviews}
-              handleReviewSubmit={handleReviewSubmit}
-              isSubmittingReview={isSubmittingReview}
-              setSelectedRestaurant={setSelectedRestaurant}
-              isBookmarked={isBookmarked}
-              handleBookmark={handleBookmark}
-              currentUserId={currentUserId}
-              handleReviewUpdate={handleReviewUpdate}
-              handleReviewDelete={handleReviewDelete}
-            />
-          )}
+                        <p className="mt-1 text-sm text-gray-500">
+                          {restaurant.category}
+                        </p>
+
+                        <p className="mt-1 text-sm text-gray-500">
+                          {restaurant.address}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            ) : (
+
+              /* 선택된 음식점이 있을 때 → 상세 화면 */
+              <RestaurantDetail
+                selectedRestaurant={selectedRestaurant}
+                reviews={reviews}
+                handleReviewSubmit={handleReviewSubmit}
+                isSubmittingReview={isSubmittingReview}
+                setSelectedRestaurant={setSelectedRestaurant}
+                isBookmarked={isBookmarked}
+                handleBookmark={handleBookmark}
+                currentUserId={currentUserId}
+                handleReviewUpdate={handleReviewUpdate}
+                handleReviewDelete={handleReviewDelete}
+              />
+            )}
+
+          </div>
         </aside>
       </div>
     </div>
