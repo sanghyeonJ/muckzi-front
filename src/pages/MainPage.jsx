@@ -53,6 +53,9 @@ function MainPage() {
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef({ startY: 0, startHeight: 0, containerHeight: 0 });
 
+  // 바텀시트 스크롤 영역 (검색 시 맨 위로 올리기용)
+  const sheetContentRef = useRef(null);
+
   // 음식점 카테고리 목록
   const categories = [
     "전체",
@@ -96,6 +99,15 @@ function MainPage() {
       });
       setIsSearched(true);
       setSearchResults(response.data);
+
+      // 검색 결과가 있으면 바텀시트 최대로, 없으면 중간
+      setSheetHeight(response.data.length > 0 ? 90 : 50);
+
+      // 결과가 보이도록 시트 내용을 맨 위로
+      sheetContentRef.current?.scrollTo({ top: 0 });
+
+      // 모바일 키보드 내리기
+      document.activeElement?.blur();
     }catch(error) {
       setIsSearched(false);
       console.error(error);
@@ -666,7 +678,7 @@ function MainPage() {
           </div>
 
           {/* 스크롤되는 내용 영역 */}
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div ref={sheetContentRef} className="min-h-0 flex-1 overflow-y-auto">
 
             {/* 선택된 음식점이 없을 때 → 목록 화면 */}
             {selectedRestaurant === null ? (
