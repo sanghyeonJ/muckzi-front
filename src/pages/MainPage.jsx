@@ -609,6 +609,7 @@ function MainPage() {
             onMapBoundsChange={setMapBounds}
             onRestaurantSelect={setSelectedRestaurant}
             selectedRestaurant={selectedRestaurant}
+            sheetHeight={sheetHeight}
           />
         </div>
 

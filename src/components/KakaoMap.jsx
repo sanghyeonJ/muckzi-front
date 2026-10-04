@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 
-function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, onRestaurantSelect, selectedRestaurant }) {
+function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, onRestaurantSelect, selectedRestaurant, sheetHeight }) {
   const [restaurants, setRestaurants] = useState([]);
   const [map, setMap] = useState(null);
   const [showSearchButton, setShowSearchButton] = useState(false);
@@ -10,6 +10,11 @@ function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, on
   const markersRef = useRef([]);
   const selectedMarkerRef = useRef(null);
   const mapRef = useRef(null);
+  const sheetHeightRef = useRef(sheetHeight);
+
+  useEffect(() => {
+    sheetHeightRef.current = sheetHeight;
+  }, [])
 
   // 음식점 조회
   const getPlaces = async (swLat, swLng, neLat, neLng) => {
@@ -200,7 +205,22 @@ function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, on
       selectedRestaurant.longitude
     );
 
-    map.panTo(position);
+    const isMobile = window.innerWidth < 1024;
+    if (isMobile && mapRef.current) {
+      const sheetPercent = Math.max(sheetHeightRef.current, 50);
+      const offsetY = (mapRef.current.clientHeight * sheetPercent) / 100 / 2;
+
+      const projection = map.getProjection();
+      const markerPoint = projection.pointFromCoords(position);
+      const centerPoint = new window.kakao.maps.Point(
+        markerPoint.x,
+        markerPoint.y + offsetY
+      );
+
+      map.panTo(projection.coordsFromPoint(centerPoint));
+    } else {
+      map.panTo(position);
+    }
 
     if (selectedMarkerRef.current) {
       selectedMarkerRef.current.setMap(null);
