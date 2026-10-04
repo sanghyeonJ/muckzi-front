@@ -161,6 +161,7 @@ function PostWritePage() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              maxLength={200}
               placeholder="제목을 입력해주세요"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
             />
@@ -173,10 +174,14 @@ function PostWritePage() {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              maxLength={4000}
               placeholder="내용을 입력해주세요"
               rows={10}
               className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
             />
+            <p className="mt-1 text-right text-xs text-gray-400">
+              {content.length} / 4000
+            </p>
           </div>
 
           <div>

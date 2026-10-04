@@ -47,6 +47,7 @@ function PasswordChangeModal({ onClose, onSuccess }) {
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
+              maxLength={20}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
             />
           </div>
@@ -59,6 +60,7 @@ function PasswordChangeModal({ onClose, onSuccess }) {
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              maxLength={20}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
             />
           </div>

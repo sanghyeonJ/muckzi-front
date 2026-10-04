@@ -84,6 +84,7 @@ function SignupPage() {
               type="text"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
+              maxLength={20}
               placeholder="아이디를 입력해주세요"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
             />
@@ -102,6 +103,7 @@ function SignupPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              maxLength={20}
               placeholder="비밀번호를 입력해주세요"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
             />
@@ -120,6 +122,7 @@ function SignupPage() {
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
+              maxLength={20}
               placeholder="닉네임을 입력해주세요"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
             />

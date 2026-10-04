@@ -202,6 +202,7 @@ function MyPage() {
                     type="text"
                     value={nicknameInput}
                     onChange={(e) => setNicknameInput(e.target.value)}
+                    maxLength={20}
                     className="rounded-lg border border-gray-300 px-3 py-1 text-sm"
                   />
                   <button

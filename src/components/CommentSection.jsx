@@ -174,9 +174,13 @@ function CommentSection ({ postId, currentUserId }) {
             <textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
+              maxLength={1000}
               rows={2}
               className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
             />
+            <p className="mt-1 text-right text-xs text-gray-400">
+              {editContent.length} / 1000
+            </p>
             <div className="mt-2 flex justify-end gap-2">
               <button
                 type="button"
@@ -243,10 +247,14 @@ function CommentSection ({ postId, currentUserId }) {
         <textarea 
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          maxLength={1000}
           placeholder={currentUserId ? "댓글을 입력해주세요." : "로그인 후 댓글을 작성할 수 있습니다."}
           rows={3}
           className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
         />
+        <p className="mt-1 text-right text-xs text-gray-400">
+          {content.length} / 1000
+        </p>
         <div className="mt-2 flex justify-end">
           <button
             type="submit"
@@ -291,10 +299,14 @@ function CommentSection ({ postId, currentUserId }) {
                   <textarea 
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
+                    maxLength={1000}
                     placeholder="답글을 입력해주세요."
                     rows={2}
                     className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
                   />
+                  <p className="mt-1 text-right text-xs text-gray-400">
+                    {replyContent.length} / 1000
+                  </p>
                   <div className="mt-2 flex justify-end">
                     <button
                       type="submit"
