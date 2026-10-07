@@ -119,11 +119,11 @@ function PostDetailPage() {
           {/* 이미지 갤러리 */}
           {post.images.length > 0 && (
             <div className="mt-5 flex gap-3 overflow-x-auto">
-              {post.images.map((image) => (
+              {post.images.map((image, index) => (
                 <img
                   key={image.postImageId}
                   src={getImageUrl(image.imageUrl)} 
-                  alt=""
+                  alt={`게시글 이미지 ${index + 1}`}
                   className="h-48 w-48 shrink-0 rounded-xl object-cover"
                 />
               ))}

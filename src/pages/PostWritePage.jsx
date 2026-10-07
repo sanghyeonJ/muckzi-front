@@ -210,16 +210,17 @@ function PostWritePage() {
             {(existingImages.length > 0 || images.length > 0) && (
               <div className="mt-3 flex flex-wrap gap-3">
                 {/** 기존 이미지 (수정모드) */}
-                {existingImages.map((image) => (
+                {existingImages.map((image, index) => (
                   <div key={`existing-${image.postImageId}`} className='relative'>
                     <img
                       src={getImageUrl(image.imageUrl)}
-                      alt=""
+                      alt={`기존 이미지 ${index + 1}`}
                       className="h-24 w-24 rounded-xl object-cover"
                     />
                     <button
                       type="button"
                       onClick={() => handleExistingImageRemove(image.postImageId)}
+                      aria-label={`기존 이미지 ${index + 1} 삭제`}
                       className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-xs text-white"
                     >
                       ✕
@@ -231,12 +232,13 @@ function PostWritePage() {
                   <div key={index} className="relative">
                     <img
                       src={URL.createObjectURL(image)}
-                      alt=""
+                      alt={`새 이미지 ${index + 1} (${image.name})`}
                       className="h-24 w-24 rounded-xl object-cover"
                     />
                     <button
                       type="button"
                       onClick={() => handleImageRemove(index)}
+                      aria-label={`새 이미지 ${index + 1} 삭제`}
                       className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-xs text-white"
                     >
                       ✕
@@ -273,6 +275,7 @@ function PostWritePage() {
                     <button
                       type="button"
                       onClick={() => handleExistingPlaceRemove(place.postPlaceLinkId)}
+                      aria-label={`${place.placeName} 연결 해제`}
                       className="text-gray-400 hover:text-gray-900"
                     >
                       ✕
@@ -289,6 +292,7 @@ function PostWritePage() {
                     <button
                       type="button"
                       onClick={() => handlePlaceRemove(index)}
+                      aria-label={`${place.placeName} 연결 해제`}
                       className="text-gray-400 hover:text-gray-900"
                     >
                       ✕
