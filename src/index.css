@@ -12,3 +12,10 @@
   --color-brand-700: #085A8F;
   --color-ink: #1A2733;
 }
+
+@layer base {
+  body {
+    /* 띄어쓰기 없는 긴 영어·URL이 영역 밖으로 넘치지 않게 필요할 때만 줄바꿈 */
+    overflow-wrap: break-word;
+  }
+}
