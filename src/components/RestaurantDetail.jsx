@@ -21,7 +21,7 @@ function RestaurantDetail({
         {/* 목록으로 돌아가기 */}
         <button
           onClick={() => setSelectedRestaurant(null)}
-          className="mb-3 text-sm text-gray-500 cursor-pointer hover:text-gray-900"
+          className="mb-3 cursor-pointer text-sm text-gray-500 hover:text-brand-600"
         >
           ← 목록
         </button>
@@ -31,8 +31,14 @@ function RestaurantDetail({
             {selectedRestaurant.placeName}
           </h2>
           <button
-            className="flex-none flex items-center justify-center w-10 h-10 rounded-lg bg-white shadow-md cursor-pointer hover:bg-gray-100 active:scale-95 transition"
             onClick={handleBookmark}
+            aria-label={isBookmarked ? "북마크 해제" : "북마크 추가"}
+            aria-pressed={isBookmarked}
+            className={`flex h-10 w-10 flex-none cursor-pointer items-center justify-center rounded-lg shadow-md transition active:scale-95 ${
+              isBookmarked
+                ? "bg-brand-50 text-brand-500 hover:bg-brand-100"
+                : "bg-white text-gray-400 hover:bg-brand-50 hover:text-brand-500"
+            }`}
           >
             <Star
               size={20}
@@ -76,7 +82,7 @@ function RestaurantDetail({
             <button
               onClick={handleReviewSubmit}
               disabled={isSubmittingReview}
-              className="rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white cursor-pointer transition hover:bg-gray-800 disabled:opacity-50"
+              className="cursor-pointer rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
             >
               리뷰 작성
             </button>
@@ -120,7 +126,7 @@ function RestaurantDetail({
                     <div className="mt-2 flex gap-3 justify-end">
                       <button
                         onClick={() => handleReviewUpdate(review)}
-                        className="text-xs text-gray-500 cursor-pointer hover:text-gray-900"
+                        className="cursor-pointer text-xs text-gray-500 hover:text-brand-600"
                       >
                         수정
                       </button>

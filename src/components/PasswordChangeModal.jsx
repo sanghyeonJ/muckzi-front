@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
@@ -8,7 +8,18 @@ function PasswordChangeModal({ onClose, onSuccess }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  const handleSubmit = async () => {
+  // Esc 키로 닫기
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     if(!currentPassword || !newPassword) {
       MuckziSwal.fire({ text: "모든 항목을 입력해주세요." });
       return;
@@ -31,37 +42,48 @@ function PasswordChangeModal({ onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
 
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
+      <form
+        onSubmit={handleSubmit}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="password-modal-title"
+        className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg"
+      >
 
-        <h2 className="mb-5 text-lg font-semibold text-gray-900">
+        <h2 id="password-modal-title" className="mb-5 text-lg font-semibold text-gray-900">
           비밀번호 변경
         </h2>
 
         <div className="space-y-4">
 
           <div>
-            <label className="mb-1 block text-sm text-gray-500">
+            <label htmlFor="current-password" className="mb-1 block text-sm text-gray-500">
               현재 비밀번호
             </label>
             <input
+              id="current-password"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               maxLength={20}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              autoComplete="current-password"
+              autoFocus
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm text-gray-500">
+            <label htmlFor="new-password" className="mb-1 block text-sm text-gray-500">
               새 비밀번호
             </label>
             <input
+              id="new-password"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               maxLength={20}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              autoComplete="new-password"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
             />
           </div>
 
@@ -69,20 +91,21 @@ function PasswordChangeModal({ onClose, onSuccess }) {
 
         <div className="mt-6 flex justify-end gap-2">
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm text-gray-500"
+            className="rounded-lg px-4 py-2 text-sm text-gray-500 hover:text-gray-900"
           >
             취소
           </button>
           <button
-            onClick={handleSubmit}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white"
+            type="submit"
+            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             변경
           </button>
         </div>
 
-      </div>
+      </form>
 
     </div>
   );

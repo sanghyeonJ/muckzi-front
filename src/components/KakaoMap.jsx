@@ -14,7 +14,7 @@ function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, on
 
   useEffect(() => {
     sheetHeightRef.current = sheetHeight;
-  }, [])
+  }, [sheetHeight]);
 
   // 음식점 조회
   const getPlaces = async (swLat, swLng, neLat, neLng) => {
