@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Check } from "lucide-react";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 
@@ -128,7 +129,7 @@ function PlaceSearchModal ({ onClose, onConfirm, alreadySelected }) {
                     added
                       ? "cursor-not-allowed bg-gray-100 opacity-50"
                       : picked
-                      ? "bg-brand-50 ring-2 ring-brand-500"
+                      ? "bg-brand-50"
                       : "bg-gray-50 hover:bg-brand-50"
                   }`}
                 >
