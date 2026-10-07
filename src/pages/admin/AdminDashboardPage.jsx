@@ -9,7 +9,7 @@ function RecentPanel({ title, to, isEmpty, children }) {
     <div className="rounded-2xl bg-white p-6 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
-        <Link to={to} className="text-xs text-gray-400 hover:text-gray-900">
+        <Link to={to} className="text-xs text-gray-400 hover:text-brand-600">
           전체 보기 →
         </Link>
       </div>
@@ -109,7 +109,7 @@ function AdminDashboardPage () {
           <button
             onClick={getDashboard}
             disabled={loading}
-            className="text-sm text-gray-500 hover:text-gray-900 disabled:opacity-50"
+            className="text-sm text-gray-500 hover:text-brand-600 disabled:opacity-50"
           >
             {loading ? "불러오는 중..." : "새로고침"}
           </button>
@@ -120,10 +120,10 @@ function AdminDashboardPage () {
             <Link
               key={card.title}
               to={card.to}
-              className="rounded-xl border border-gray-100 bg-gray-50 p-5 transition hover:border-gray-300 hover:bg-white"
+              className="rounded-xl border border-gray-100 bg-gray-50 p-5 transition hover:border-brand-500 hover:bg-white"
             >
               <p className="text-sm text-gray-500">{card.title}</p>
-              <p className="mt-2 text-3xl font-bold text-gray-900">{card.total.toLocaleString()}</p>
+              <p className="mt-2 text-3xl font-bold text-brand-600">{card.total.toLocaleString()}</p>
               {card.subs.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500">
                   {card.subs.map((sub) => (
@@ -209,7 +209,7 @@ function AdminDashboardPage () {
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-3">
                     <span className={`w-5 shrink-0 text-center text-sm font-bold ${
-                      index === 0 ? "text-gray-900" : "text-gray-400"
+                      index === 0 ? "text-brand-600" : "text-gray-400"
                     }`}>
                       {index + 1}
                     </span>
@@ -217,7 +217,7 @@ function AdminDashboardPage () {
                       to={`/?placeId=${place.placeId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="truncate text-sm text-gray-900 hover:underline"
+                      className="truncate text-sm text-gray-900 hover:text-brand-600 hover:underline"
                     >
                       {place.placeName}
                     </Link>
@@ -228,9 +228,9 @@ function AdminDashboardPage () {
                 </div>
 
                 {/* 리뷰 수 막대 */}
-                <div className="ml-8 mt-2 h-1.5 rounded-full bg-gray-100">
+                <div className="ml-8 mt-2 h-1.5 rounded-full bg-brand-50">
                   <div
-                    className="h-1.5 rounded-full bg-gray-900"
+                    className="h-1.5 rounded-full bg-brand-500"
                     style={{ width: `${percent}%` }}
                   />
                 </div>

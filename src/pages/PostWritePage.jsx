@@ -164,7 +164,7 @@ function PostWritePage() {
               onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
               placeholder="제목을 입력해주세요"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
             />
           </div>
 
@@ -178,7 +178,7 @@ function PostWritePage() {
               maxLength={4000}
               placeholder="내용을 입력해주세요"
               rows={10}
-              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
             />
             <p className="mt-1 text-right text-xs text-gray-400">
               {content.length} / 4000
@@ -202,7 +202,7 @@ function PostWritePage() {
             <button
               type="button"
               onClick={() => fileInputRef.current.click()}
-              className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
+              className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-brand-50 hover:text-brand-600"
             >
               이미지 선택
             </button>
@@ -257,7 +257,7 @@ function PostWritePage() {
               <button
                 type="button"
                 onClick={() => setShowPlaceModal(true)}
-                className="text-sm text-gray-500 underline"
+                className="text-sm text-brand-600 underline hover:text-brand-700"
               >
                 음식점 링크 연결
               </button>
@@ -322,7 +322,7 @@ function PostWritePage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg bg-black px-5 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50"
+              className="rounded-lg bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
             >
               {isEditMode ? "수정" : "등록"}
             </button>

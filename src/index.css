@@ -1,5 +1,14 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
 @import "tailwindcss";
+
 @theme {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* 먹지 브랜드 색 */
+  --color-brand-50: #EEF8FE;
+  --color-brand-100: #D6EFFD;
+  --color-brand-500: #1EA7F2;
+  --color-brand-600: #0A6FB0;
+  --color-brand-700: #085A8F;
+  --color-ink: #1A2733;
 }

@@ -152,7 +152,7 @@ function MyPage() {
 
           <div className="flex items-center gap-4">
 
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-900 text-xl font-bold text-white">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500 text-xl font-bold text-white">
               {user.nickname.charAt(0)}
             </div>
 
@@ -203,11 +203,11 @@ function MyPage() {
                     value={nicknameInput}
                     onChange={(e) => setNicknameInput(e.target.value)}
                     maxLength={20}
-                    className="rounded-lg border border-gray-300 px-3 py-1 text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-1 text-sm outline-none focus:border-brand-500"
                   />
                   <button
                     onClick={handleUpdateNickname}
-                    className="text-sm font-medium text-blue-600"
+                    className="text-sm font-medium text-brand-600 hover:text-brand-700"
                   >
                     저장
                   </button>
@@ -228,7 +228,7 @@ function MyPage() {
                       setNicknameInput(user.nickname);
                       setIsEditingNickname(true);
                     }}
-                    className="text-xs text-gray-400 underline"
+                    className="text-xs text-gray-400 underline hover:text-brand-600"
                   >
                     수정
                   </button>
@@ -263,7 +263,7 @@ function MyPage() {
 
               <button
                 onClick={() => setShowPasswordModal(true)}
-                className="text-xs text-gray-400 underline"
+                className="text-xs text-gray-400 underline hover:text-brand-600"
               >
                 변경
               </button>
@@ -290,20 +290,20 @@ function MyPage() {
         <div className="mt-6 flex gap-2 border-b border-gray-200">
           <button
             onClick={() => setActiveTab('review')}
-            className={`px-4 py-3 text-sm font-medium ${
+            className={`px-4 py-3 text-sm font-medium transition ${
               activeTab === 'review'
-                ? 'border-b-2 border-gray-900 text-gray-900'
-                : 'text-gray-400'
+                ? 'border-b-2 border-brand-600 text-brand-600'
+                : 'text-gray-400 hover:text-gray-700'
             }`}
           >
             내 리뷰
           </button>
           <button
             onClick={() => setActiveTab('bookmark')}
-            className={`px-4 py-3 text-sm font-medium ${
+            className={`px-4 py-3 text-sm font-medium transition ${
               activeTab === 'bookmark'
-                ? 'border-b-2 border-gray-900 text-gray-900'
-                : 'text-gray-400'
+                ? 'border-b-2 border-brand-600 text-brand-600'
+                : 'text-gray-400 hover:text-gray-700'
             }`}
           >
             북마크
@@ -328,7 +328,7 @@ function MyPage() {
                   <div
                     key={review.reviewId}
                     onClick={() => handleReviewClick(review.placeId)}
-                    className="rounded-2xl bg-white p-5 shadow-sm cursor-pointer"
+                    className="cursor-pointer rounded-2xl bg-white p-5 shadow-sm transition hover:bg-brand-50"
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <span className="text-sm font-semibold text-gray-900">
@@ -362,7 +362,7 @@ function MyPage() {
                   <div
                     key={bookmark.bookmarkId}
                     onClick={() => handleBookmarkClick(bookmark.placeId)}
-                    className="cursor-pointer rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
+                    className="cursor-pointer rounded-2xl bg-white p-5 shadow-sm transition hover:bg-brand-50"
                   >
                     <div className="mb-1 flex items-center justify-between">
                       <span className="text-sm font-semibold text-gray-900">

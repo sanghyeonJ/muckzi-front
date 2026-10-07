@@ -65,7 +65,7 @@ function PostListPage () {
 
           <button
             onClick={handleWriteClick}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
+            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             글쓰기
           </button>
@@ -88,9 +88,9 @@ function PostListPage () {
               <Link
                 key={post.postId}
                 to={`/posts/${post.postId}`}
-                className="block rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
+                className="group block rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
               >
-                <h2 className="font-bold text-gray-900">
+                <h2 className="font-bold text-gray-900 transition group-hover:text-brand-600">
                   {post.title}
                 </h2>
 

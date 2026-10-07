@@ -176,7 +176,7 @@ function CommentSection ({ postId, currentUserId }) {
               onChange={(e) => setEditContent(e.target.value)}
               maxLength={1000}
               rows={2}
-              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
             />
             <p className="mt-1 text-right text-xs text-gray-400">
               {editContent.length} / 1000
@@ -192,7 +192,7 @@ function CommentSection ({ postId, currentUserId }) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50"
+                className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
               >
                 저장
               </button>
@@ -208,7 +208,7 @@ function CommentSection ({ postId, currentUserId }) {
               {!isReply && (
                 <button
                   onClick={() => handleReplyToggle(item.commentId)}
-                  className="hover:text-gray-900"
+                  className="hover:text-brand-600"
                 >
                   {replyTargetId === item.commentId ? "답글 취소" : "답글"}
                 </button>
@@ -217,7 +217,7 @@ function CommentSection ({ postId, currentUserId }) {
                 <>
                   <button
                     onClick={() => handleEditStart(item)}
-                    className="hover:text-gray-900"
+                    className="hover:text-brand-600"
                   >
                     수정
                   </button>
@@ -250,7 +250,7 @@ function CommentSection ({ postId, currentUserId }) {
           maxLength={1000}
           placeholder={currentUserId ? "댓글을 입력해주세요." : "로그인 후 댓글을 작성할 수 있습니다."}
           rows={3}
-          className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+          className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
         />
         <p className="mt-1 text-right text-xs text-gray-400">
           {content.length} / 1000
@@ -259,7 +259,7 @@ function CommentSection ({ postId, currentUserId }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50"
+            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
           >
             등록
           </button>
@@ -302,7 +302,7 @@ function CommentSection ({ postId, currentUserId }) {
                     maxLength={1000}
                     placeholder="답글을 입력해주세요."
                     rows={2}
-                    className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+                    className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
                   />
                   <p className="mt-1 text-right text-xs text-gray-400">
                     {replyContent.length} / 1000
@@ -311,7 +311,7 @@ function CommentSection ({ postId, currentUserId }) {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50"
+                      className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
                     >
                       답글 등록
                     </button>

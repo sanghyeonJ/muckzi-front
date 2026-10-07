@@ -99,11 +99,11 @@ function AdminPostPage () {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="제목, 아이디, 닉네임 검색"
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm outline-none focus:border-gray-900"
+            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm outline-none focus:border-brand-500"
           />
           <button
             type="submit"
-            className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
+            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             검색
           </button>
@@ -111,7 +111,7 @@ function AdminPostPage () {
         <select
           value={statusFilter}
           onChange={handleStatusFilterChange}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
         >
           <option value="">전체</option>
           <option value="ACTIVE">정상</option>
@@ -151,7 +151,7 @@ function AdminPostPage () {
                         to={`/posts/${post.postId}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-900 hover:underline"
+                        className="text-gray-900 hover:text-brand-600 hover:underline"
                       >
                         {post.title}
                       </Link>
@@ -182,7 +182,7 @@ function AdminPostPage () {
                     ) : (
                       <button
                         onClick={() => handleStatusChange(post, "ACTIVE")}
-                        className="text-sm text-gray-600 hover:underline"
+                        className="text-sm text-brand-600 hover:underline"
                       >
                         복구
                       </button>

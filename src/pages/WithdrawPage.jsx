@@ -127,7 +127,7 @@ function WithdrawPage () {
               onChange={(e) => setPassword(e.target.value)}
               maxLength={20}
               placeholder="현재 비밀번호를 입력해주세요"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-red-500"
             />
           </div>
 

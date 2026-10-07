@@ -99,7 +99,7 @@ function PostDetailPage() {
         {/* 목록으로 이동 */}
         <button
           onClick={() => navigate("/posts")}
-          className="mb-4 flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
+          className="mb-4 flex items-center gap-1 text-sm text-gray-500 hover:text-brand-600"
         >
           ← 목록
         </button>
@@ -147,7 +147,7 @@ function PostDetailPage() {
                   <button
                     key={place.postPlaceLinkId}
                     onClick={() => handlePlaceClick(place.placeId)}
-                    className="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-200"
+                    className="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:bg-brand-50 hover:text-brand-600"
                   >
                     📍 {place.placeName}
                   </button>
@@ -161,7 +161,7 @@ function PostDetailPage() {
             <div className="mt-6 flex justify-end gap-3 border-t border-gray-100 pt-5">
               <button
                 onClick={() => navigate(`/posts/${postId}/edit`)}
-                className="text-sm text-gray-500 hover:text-gray-900"
+                className="text-sm text-gray-500 hover:text-brand-600"
               >
                 수정
               </button>

@@ -85,7 +85,7 @@ function SignupPage() {
               onChange={(e) => setUserId(e.target.value)}
               maxLength={20}
               placeholder="아이디를 입력해주세요"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
             />
           </div>
 
@@ -104,7 +104,7 @@ function SignupPage() {
               onChange={(e) => setPassword(e.target.value)}
               maxLength={20}
               placeholder="비밀번호를 입력해주세요"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
             />
           </div>
 
@@ -123,13 +123,13 @@ function SignupPage() {
               onChange={(e) => setNickname(e.target.value)}
               maxLength={20}
               placeholder="닉네임을 입력해주세요"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-brand-500"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-gray-900 py-3 text-sm font-semibold text-white transition hover:bg-gray-700"
+            className="w-full rounded-lg bg-brand-600 py-3 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             회원가입
           </button>

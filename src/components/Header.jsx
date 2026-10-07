@@ -47,7 +47,7 @@ function Header() {
   }
 
   return (
-    <header className="border-b border-grey-200 bg-white">
+    <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link
           to="/"
@@ -57,28 +57,28 @@ function Header() {
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
-          <Link to="/posts" className="text-gray-700 hover:text-gray-900">게시판</Link>
+          <Link to="/posts" className="text-gray-700 hover:text-brand-600">게시판</Link>
           <span className="h-4 w-px bg-gray-200" />
           {isLoggedIn ? (
             <>
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className='font-semibold text-gray-900 hover:underline'
+                  className="rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-brand-700"
                 >
                   관리자
                 </Link>
               )}
               <Link
                 to="/mypage"
-                className="text-gray-700 hover:text-gray-900"
+                className="text-gray-700 hover:text-brand-600"
               >
                 마이페이지
               </Link>
 
               <button
                 onClick={handleLogout}
-                className="text-gray-700 hover:text-gray-900 cursor-pointer"
+                className="cursor-pointer text-gray-700 hover:text-brand-600"
               >
                 로그아웃
               </button>
@@ -87,14 +87,14 @@ function Header() {
             <>
               <Link
                 to="/login"
-                className="text-gray-700 hover:text-gray-900"
+                className="text-gray-700 hover:text-brand-600"
               >
                 로그인
               </Link>
 
               <Link
                 to="/signup"
-                className="text-gray-700 hover:text-gray-900"
+                className="rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-brand-700"
               >
                 회원가입
               </Link>

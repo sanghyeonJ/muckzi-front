@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 
-const menu = [
+const menus = [
   { to: "/admin", label: "대시보드", end: true },
   { to: "/admin/users", label: "회원 관리" },
   { to: "/admin/posts", label: "게시글 관리" },
@@ -19,20 +19,20 @@ function AdminLayout () {
           <h2 className="mb-3 px-3 text-xs font-semibold text-gray-400">관리자</h2>
 
           <nav className="flex gap-1 overflow-x-auto md:flex-col">
-            {menu.map((menu) => (
+            {menus.map((item) => (
               <NavLink
-                key={menu.to}
-                to={menu.to}
-                end={menu.end}
+                key={item.to}
+                to={item.to}
+                end={item.end}
                 className={({ isActive }) => 
                   `whitespace-nowrap rounded-lg px-3 py-2 text-sm transition ${
                     isActive
-                      ? "bg-black font-semibold text-white"
-                      : "text-gray-600 hover:bg-gray-100"
+                      ? "bg-brand-600 font-semibold text-white"
+                      : "text-gray-600 hover:bg-brand-50 hover:text-brand-600"
                   }`
                 }
               >
-                {menu.label}
+                {item.label}
               </NavLink>
             ))}
           </nav>

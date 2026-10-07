@@ -20,7 +20,7 @@ function Pagination ({ currentPage, totalPages, onPageChange }) {
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 0}
         aria-label="이전 페이지"
-        className="h-9 rounded-lg px-3 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-700 hover:bg-brand-50 hover:text-brand-600 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-700"
       >
         <ChevronLeft size={18} />
       </button>
@@ -31,8 +31,8 @@ function Pagination ({ currentPage, totalPages, onPageChange }) {
           aria-current={page === currentPage ? "page" : undefined}
           className={`h-9 w-9 rounded-lg text-sm ${
             page === currentPage
-              ? "bg-black text-white"
-              : "bg-white text-gray-700 hover:bg-gray-100"
+              ? "bg-brand-600 font-semibold text-white"
+              : "bg-white text-gray-700 hover:bg-brand-50 hover:text-brand-600"
           }`}
         >
           {page + 1}
@@ -42,7 +42,7 @@ function Pagination ({ currentPage, totalPages, onPageChange }) {
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages - 1}
         aria-label="다음 페이지"
-        className="h-9 rounded-lg px-3 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-700 hover:bg-brand-50 hover:text-brand-600 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-700"
       >
         <ChevronRight size={18} />
       </button>

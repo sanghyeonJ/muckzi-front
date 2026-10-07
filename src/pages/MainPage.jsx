@@ -582,12 +582,12 @@ function MainPage() {
               }
             }}
             placeholder="음식점을 검색해보세요."
-            className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-400"
+            className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-brand-500 focus:bg-white"
           />
 
           <button
             onClick={() => searchPlaces(searchKeyword)}
-            className="shrink-0 rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+            className="shrink-0 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             검색
           </button>
@@ -601,10 +601,10 @@ function MainPage() {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm ${
+              className={`shrink-0 rounded-full px-4 py-2 text-sm transition ${
                 selectedCategory === category
-                  ? "bg-black text-white"
-                  : "bg-gray-100 text-gray-700"
+                  ? "bg-brand-600 font-semibold text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-brand-50 hover:text-brand-600"
               }`}
             >
               {category}
@@ -700,7 +700,7 @@ function MainPage() {
                         <div
                           key={place.kakaoPlaceId}
                           onClick={() => handleSearchResultClick(place)}
-                          className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
+                          className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:bg-brand-50"
                         >
                           <h4 className="font-bold text-gray-900">
                             {place.placeName}
@@ -751,7 +751,7 @@ function MainPage() {
                       <div
                         key={restaurant.placeId}
                         onClick={() => setSelectedRestaurant(restaurant)}
-                        className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:shadow-md"
+                        className="cursor-pointer rounded-xl bg-gray-50 p-4 transition hover:bg-brand-50"
                       >
                         <h3 className="font-bold text-gray-900">
                           {restaurant.placeName}

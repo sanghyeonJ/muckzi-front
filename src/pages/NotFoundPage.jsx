@@ -8,7 +8,7 @@ function NotFoundPage () {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gray-50 px-4">
 
       <div className="text-center">
-        <p className="text-6xl font-bold text-gray-900">404</p>
+        <p className="text-6xl font-bold text-brand-500">404</p>
 
         <h1 className="mt-4 text-lg font-semibold text-gray-900">
           페이지를 찾을 수 없습니다
@@ -26,7 +26,7 @@ function NotFoundPage () {
           </button>
           <Link
             to="/"
-            className="rounded-lg bg-black px-5 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
+            className="rounded-lg bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             메인으로
           </Link>

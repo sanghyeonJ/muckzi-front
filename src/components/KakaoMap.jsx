@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import api from "../api/axios";
 import MuckziSwal from "../utils/swal";
 
+// 지도 마커 색 (SVG 안에서는 Tailwind 클래스를 못 쓰므로 직접 지정, index.css의 색과 맞춤)
+const MARKER_COLOR = "#1A2733";        // ink (일반 마커 테두리, 선택 마커 바깥 테두리)
+const MARKER_SELECTED = "#1EA7F2";     // brand-500 (선택 마커 채우기)
+
 function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, onRestaurantSelect, selectedRestaurant, sheetHeight }) {
   const [restaurants, setRestaurants] = useState([]);
   const [map, setMap] = useState(null);
@@ -138,10 +142,10 @@ function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, on
             <circle
               cx="10"
               cy="10"
-              r="8"
+              r="7.5"
               fill="white"
-              stroke="black"
-              stroke-width="3"
+              stroke="${MARKER_COLOR}"
+              stroke-width="3.5"
             />
           </svg>
         `),
@@ -231,23 +235,17 @@ function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, on
         encodeURIComponent(`
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
           >
-            <circle
-              cx="14"
-              cy="14"
-              r="11"
-              fill="black"
-              stroke="white"
-              stroke-width="4"
-            />
+            <circle cx="16" cy="16" r="14.5" fill="none" stroke="${MARKER_COLOR}" stroke-width="1.5" />
+            <circle cx="16" cy="16" r="11" fill="${MARKER_SELECTED}" stroke="white" stroke-width="4" />
           </svg>
         `),
-      new window.kakao.maps.Size(28, 28),
+      new window.kakao.maps.Size(32, 32),
       {
-        offset: new window.kakao.maps.Point(14, 14),
+        offset: new window.kakao.maps.Point(16, 16),
       }
     );
 
@@ -290,7 +288,7 @@ function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, on
       {showSearchButton && (
         <button
           onClick={handleSearch}
-          className="absolute left-1/2 top-4 -translate-x-1/2 cursor-pointer rounded-full bg-white px-5 py-3 text-sm font-semibold shadow-md z-1 transition hover:bg-gray-100"
+          className="absolute left-1/2 top-4 z-1 -translate-x-1/2 cursor-pointer rounded-full bg-white px-5 py-3 text-sm font-semibold text-brand-600 shadow-md transition hover:bg-brand-50"
         >
           현재 위치에서 검색
         </button>
