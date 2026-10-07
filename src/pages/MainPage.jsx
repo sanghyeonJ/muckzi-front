@@ -471,10 +471,13 @@ function MainPage() {
     getMe();
   }, []);
 
-  // 리뷰선택
+  // 다른 페이지에서 음식점을 지정해서 들어온 경우
+  // (같은 탭: navigate state / 새 탭·공유 링크: ?placeId=)
   useEffect(() => {
 
-    const placeId = location.state?.placeId;
+    const placeId =
+      location.state?.placeId ??
+      new URLSearchParams(location.search).get("placeId");
 
     if (!placeId) {
       return;
@@ -501,7 +504,7 @@ function MainPage() {
 
     getPlace();
 
-  }, [location.state]);
+  }, [location.state, location.search]);
 
   // 모바일 바텀 시트 //
   // 가까운 단계 찾기

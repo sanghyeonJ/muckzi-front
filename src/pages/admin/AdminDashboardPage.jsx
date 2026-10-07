@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import MuckziSwal from "../../utils/swal";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // 최근 활동 패널 공통 틀 (제목 + 전체 보기 + 목록)
 function RecentPanel({ title, to, isEmpty, children }) {
@@ -32,13 +32,6 @@ function AdminDashboardPage () {
   const [recentPosts, setRecentPosts] = useState([]);
   const [recentReviews, setRecentReviews] = useState([]);
   const [loading, setLoading] = useState(null);
-
-  const navigate = useNavigate();
-
-  // 음식점 클릭 → 지도에서 해당 음식점 열기
-  const handlePlaceClick = (placeId) => {
-    navigate("/", { state: { placeId } });
-  };
 
   const getDashboard = async () => {
     setLoading(true);
@@ -220,12 +213,14 @@ function AdminDashboardPage () {
                     }`}>
                       {index + 1}
                     </span>
-                    <button
-                      onClick={() => handlePlaceClick(place.placeId)}
+                    <Link
+                      to={`/?placeId=${place.placeId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="truncate text-sm text-gray-900 hover:underline"
                     >
                       {place.placeName}
-                    </button>
+                    </Link>
                   </div>
                   <span className="shrink-0 text-xs text-gray-500">
                     리뷰 {place.reviewCount}

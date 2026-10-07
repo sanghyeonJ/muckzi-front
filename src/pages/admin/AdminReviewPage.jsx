@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import api from "../../api/axios";
 import MuckziSwal from "../../utils/swal";
 import { toast } from "sonner";
@@ -12,8 +12,6 @@ const STATUS_LABELS = {
 };
 
 function AdminReviewPage () {
-
-  const navigate = useNavigate();
 
   const [reviews, setReviews] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -62,11 +60,6 @@ function AdminReviewPage () {
   const handleStatusFilterChange = (e) => {
     setStatusFilter(e.target.value);
     setCurrentPage(0);
-  }
-
-  // 음식점 클릭
-  const handlePlaceClick = (placeId) => {
-    navigate("/", { state: { placeId } });
   }
 
   // 상태 변경
@@ -154,12 +147,14 @@ function AdminReviewPage () {
                 <tr key={review.reviewId}>
                   <td className="whitespace-nowrap px-3 py-3 text-gray-500">{review.reviewId}</td>
                   <td className="max-w-[10rem] truncate px-3 py-3">
-                    <button
-                      onClick={() => handlePlaceClick(review.placeId)}
+                    <Link
+                      to={`/?placeId=${review.placeId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-gray-600 hover:underline"
                     >
                       📍 {review.placeName}
-                    </button>
+                    </Link>
                   </td>
                   <td className={`max-w-xs truncate px-3 py-3 ${
                     review.status === "DELETED" ? "text-gray-400 line-through" : "text-gray-900"
