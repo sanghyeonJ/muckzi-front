@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useEffect, useState } from 'react';
 
+import logo from '../assets/muckzi-logo.svg';
+
 function Header() {
 
   const navigate = useNavigate();
@@ -49,9 +51,9 @@ function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link
           to="/"
-          className="text-xl font-bold text-grey-900"
+          aria-label="홈으로 이동"
         >
-          먹지
+          <img src={logo} alt="먹지" className="h-9 w-auto" />
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
