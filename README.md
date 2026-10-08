@@ -2,7 +2,7 @@
 
 > "오늘 뭐 먹지?" 고민을 지도 위에서 해결하는 음식점 리뷰 서비스
 
-🔗 **서비스 바로가기** : https://muckzi.vercel.app
+🔗 **서비스 바로가기** : https://muckzi.vercel.app <br>
 📖 **프로젝트 상세 소개 (기능 · 아키텍처 · ERD · 트러블슈팅)** : [백엔드 저장소 README](https://github.com/sanghyeonJ/muckzi-back)
 
 <br>
