@@ -19,3 +19,12 @@
     overflow-wrap: break-word;
   }
 }
+
+/* iOS Safari 입력창 포커스 시 자동 확대 방지 (모바일에서만 16px) */
+@media (max-width: 767px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
