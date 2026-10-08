@@ -235,17 +235,16 @@ function KakaoMap({ selectedCategory, onRestaurantsChange, onMapBoundsChange, on
         encodeURIComponent(`
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 32 32"
+            width="30"
+            height="30"
+            viewBox="0 0 30 30"
           >
-            <circle cx="16" cy="16" r="14.5" fill="none" stroke="${MARKER_COLOR}" stroke-width="1.5" />
-            <circle cx="16" cy="16" r="11" fill="${MARKER_SELECTED}" stroke="white" stroke-width="4" />
+            <circle cx="16" cy="16" r="11" fill="white" stroke="${MARKER_SELECTED}" stroke-width="4.5" />
           </svg>
         `),
-      new window.kakao.maps.Size(32, 32),
+      new window.kakao.maps.Size(30, 30),
       {
-        offset: new window.kakao.maps.Point(16, 16),
+        offset: new window.kakao.maps.Point(15, 15),
       }
     );
 
